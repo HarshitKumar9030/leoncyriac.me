@@ -1,113 +1,113 @@
+"use client";
+
+import React, { useState } from "react";
 import Image from "next/image";
+import Highlight from "@/components/common/Highlight";
+import Link from "next/link";
 
 export default function Home() {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpansion = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      <div className="my-8 flex max-w-xl flex-col items-center justify-center space-y-8 mx-auto text-justify">
+        {/* Always shows */}
+        <div className="text text-base font-light md:text-lg text-gray-700 dark:text-gray-300">
+          Hello there! This is Harshit, also known as{" "}
+          <Highlight href="https://leoncyriac.me">LeonCyriac</Highlight>.
+          I&apos;m a self-taught <Highlight>full-stack developer</Highlight> and
+          a student from{" "}
+          <Highlight href="https://en.wikipedia.org/wiki/India">
+            India
+          </Highlight>
+          , with a passion for crafting modern web technologies. My journey is
+          rooted in a deep fascination for <Highlight>JavaScript</Highlight>,
+          exploring the vast landscape of{" "}
+          <Highlight>LLMs (Large Language Models)</Highlight>, and creating
+          intelligent solutions with{" "}
+          <Highlight href="https://openai.com/">AI</Highlight>.
+        </div>
+
+        {isExpanded && (
+          <>
+            <div className="text text-base font-light md:text-lg text-gray-700 dark:text-gray-300">
+              My expertise lies in building responsive and high-performance
+              applications using{" "}
+              <Highlight href="https://nextjs.org/">Next.js</Highlight>,{" "}
+              <Highlight href="https://reactjs.org/">React</Highlight>, and{" "}
+              <Highlight href="https://tailwindcss.com/">
+                Tailwind CSS
+              </Highlight>
+              . I also have a strong command of{" "}
+              <Highlight>TypeScript</Highlight> and{" "}
+              <Highlight href="https://nodejs.org/">Node.js</Highlight>,
+              enabling me to develop scalable and maintainable solutions. My
+              journey began as a curious student, and over time, I have
+              sharpened my skills through hands-on projects, continuous
+              learning, and active participation in the developer community.
+            </div>
+
+            <div className="text text-base font-light md:text-lg text-gray-700 dark:text-gray-300">
+              I am driven by the ever-evolving world of technology and
+              constantly seek to explore new trends, particularly in{" "}
+              <Highlight href="https://www.ibm.com/cloud/learn/machine-learning">
+                AI
+              </Highlight>{" "}
+              and{" "}
+              <Highlight href="https://en.wikipedia.org/wiki/Machine_learning">
+                machine learning
+              </Highlight>
+              . I am currently delving into advanced concepts like{" "}
+              <Highlight href="https://en.wikipedia.org/wiki/Large_language_model">
+                large language models (LLMs)
+              </Highlight>{" "}
+              and integrating AI-powered features into web applications. My goal
+              is to combine aesthetics and functionality to create{" "}
+              <Highlight href="https://tailwindcss.com/">
+                beautiful applications
+              </Highlight>{" "}
+              that are both intuitive and powerful.
+            </div>
+          </>
+        )}
+
+        {/* Buttons */}
+        <div className="flex justify-between flex-row w-full">
+          <Link href={"https://x.com/OhHarshit"}>
+            <button className="mt-4 px-6 py-2 dark:text-black flex items-center text-sm gap-2 font-medium text-neutral-900  bg-neutral-100 cursor-nesw-resize dark:bg-white rounded-lg transition-all duration-300 transform hover:scale-105">
+              <span className="w-6 h-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="rgb(0,0,0)"
+                  shapeRendering="geometricPrecision"
+                  textRendering="geometricPrecision"
+                  imageRendering="optimizeQuality"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  viewBox="0 0 512 462.799"
+                >
+                  <path
+                    fillRule="nonzero"
+                    d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"
+                  />
+                </svg>
+              </span>
+              Find me on X.
+            </button>
+          </Link>
+
+          <button
+            onClick={toggleExpansion}
+            className="mt-4 px-4 py-2 text-sm font-medium text-neutral-900 dark:text-neutral-50 hover:text-neutral-950 hover:dark:text-white p-2 underline underline-offset-1  rounded-lg transition duration-300"
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            {isExpanded ? "Read Less" : "Read More"}
+          </button>
         </div>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   );
 }
