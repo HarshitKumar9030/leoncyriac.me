@@ -110,6 +110,7 @@ export async function getWatchList(
     }
 
     const data: WatchlistResponse = await response.json();
+    console.log(data.data[0].panel.images.thumbnail as any)
     return data;
   } catch (error: unknown) {
     if (error instanceof Error) {
