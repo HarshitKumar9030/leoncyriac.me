@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { ModeToggle } from '../ui/theme-switcher';
@@ -18,6 +18,7 @@ const Navbar = () => {
     width: 0,
   });
   const [isMounted, setIsMounted] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
     { name: 'Home', href: '/' },
@@ -26,8 +27,7 @@ const Navbar = () => {
   ];
 
   useEffect(() => {
-    // Mark the component as mounted to avoid hydration issues
-    setIsMounted(true);
+    setIsMounted(true); // Mark the component as mounted to avoid hydration issues
   }, []);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const Navbar = () => {
 
   const updateUnderlinePosition = (href: string) => {
     const element = document.querySelector(`[href="${href}"]`) as HTMLElement;
-    const container = document.querySelector('.relative') as HTMLElement;
+    const container = navRef.current;
 
     if (element && container) {
       const { left, width } = element.getBoundingClientRect();
@@ -71,7 +71,7 @@ const Navbar = () => {
         alt="Logo"
         priority
       />
-      <div className="relative flex flex-row gap-8 text-lg">
+      <div ref={navRef} className="relative flex flex-row gap-8 text-lg">
         {navItems.map((item) => (
           <Link key={item.href} href={item.href} passHref>
             <Button
@@ -82,13 +82,14 @@ const Navbar = () => {
                   ? 'text-black dark:text-white font-semibold'
                   : 'text-gray-600 dark:text-gray-300'
               }`}
+              aria-current={pathname === item.href ? 'page' : undefined}
             >
               {item.name}
             </Button>
           </Link>
         ))}
         <motion.div
-          layoutId="underline"
+          layout
           className="absolute -bottom-1 h-[2px] bg-neutral-400 dark:bg-neutral-600 rounded-full"
           initial={false}
           animate={underlineProps}

@@ -26,7 +26,7 @@ export default function RootLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <body className={`${inter.className}`}>
+        <body className={`${inter.className} dark:bg-neutral-900 bg-neutral-50`}>
           <Navbar />
           <main className="pointer-events-auto">{children}
               <Toaster />
