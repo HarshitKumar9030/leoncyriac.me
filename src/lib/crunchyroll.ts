@@ -108,9 +108,8 @@ export async function getWatchList(
       console.log(response)
       throw new Error(`Failed to fetch watchlist: ${response.status} ${response.statusText}`);
     }
-
     const data: WatchlistResponse = await response.json();
-    console.log(data.data[0].panel.images.thumbnail as any)
+    // console.log(data.data[2].panel as any)
     return data;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -122,3 +121,5 @@ export async function getWatchList(
     }
   }
 }
+
+

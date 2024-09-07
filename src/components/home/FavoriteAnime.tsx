@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion, useAnimation } from "framer-motion";
+import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { fetchAnime } from "@/lib/anime";
 import { getWatchList } from "@/lib/crunchyroll";
-import { WatchlistItem2 } from "@/types/types";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { WatchlistItem2, WatchListPanel } from "@/types/types";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Heart,
+  Play,
+  Plus,
+  X,
+  HeartCrack,
+} from "lucide-react";
+import { Button } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
+import { Card, CardContent } from "../ui/card";
+import Link from "next/link";
+import { constructAnimeUrl } from "@/lib/url_constructor";
+import { Url } from "next/dist/shared/lib/router/router";
 
 interface Anime {
   mal_id: number;
@@ -92,72 +107,84 @@ export default function FavoriteAnime() {
         </div>
       )}
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut", staggerChildren: 0.2 }}
-        className="flex flex-col items-center mt-16 p-8 md:p-12 bg-white dark:bg-neutral-800 rounded-xl shadow-lg max-w-md md:max-w-lg mx-auto"
-      >
+      {/* Watchlist Component */}
+      <div className="relative overflow-hidden">
         <motion.div
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className="flex flex-col items-center"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="flex items-center justify-between p-6 !bg-opacity-[0.98] bg-white dark:bg-neutral-800 rounded-xl shadow-lg mx-auto my-8"
         >
-          <Image
-            src={"/crunchyroll.svg"}
-            alt="Crunchyroll Logo"
-            width={200}
-            height={150}
-            className="mb-4"
-            priority
-          />
-          <div className="border w-full mb-4 dark:border-neutral-600 border-neutral-600 rounded-full"></div>
-          <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-4 text-center"
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="flex items-center space-x-6"
           >
-            My Watchlist
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="text-sm md:text-base text-neutral-600 dark:text-neutral-400 mb-6 text-center max-w-xs"
-          >
-            A personalized collection of shows and movies just for me. Stay up
-            to date with my favorites and discover new ones to add to my list
-            anytime.
-          </motion.p>
+            <Image
+              src="/crunchyroll_hime.png"
+              alt="Crunchyroll Mascot"
+              width={100}
+              height={100}
+              className="rounded-full"
+              priority
+            />
+            <div className="flex flex-col">
+              <motion.h1
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-2"
+              >
+                My Watchlist
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="text-sm md:text-base text-neutral-600 dark:text-neutral-400 max-w-md"
+              >
+                Stay up to date with your favorites and discover new anime to
+                add to your list anytime.
+              </motion.p>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleOpenWatchlist}
+              className="px-6 py-2 text-sm font-medium text-neutral-900 bg-[#f8f4f4] dark:text-neutral-900 dark:bg-white rounded-lg shadow-md hover:bg-neutral-100 transition-all duration-300"
+            >
+              Show Watchlist
+            </motion.button>
+          </motion.div>
         </motion.div>
-        <motion.button
-          whileHover={{
-            scale: 1.05,
-          }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleOpenWatchlist}
-          className="px-6 py-2 flex items-center text-sm gap-2 font-medium text-neutral-900 bg-[#f8f4f4] dark:text-neutral-900 dark:bg-white cursor-pointer rounded-lg transition-transform duration-300"
-        >
-          Show Watchlist
-        </motion.button>
-      </motion.div>
 
-      {/* Watchlist Modal */}
-      {showWatchlistModal && (
-        <WatchlistModal
-          watchlist={watchlist}
-          onClose={handleCloseModal}
-          isLoading={isLoadingWatchlist}
-          selectedAnimeIndex={selectedAnimeIndex}
-          setSelectedAnimeIndex={setSelectedAnimeIndex}
-        />
-      )}
+        {/* Grid Animation */}
+        <div className="absolute inset-0 -z-10 h-full w-full">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#f8f4f4_1px,transparent_1px),linear-gradient(to_bottom,#f8f4f4_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#fff_70%,transparent_100%)]">
+            <motion.div
+              className="absolute inset-0"
+              initial={{ opacity: 0.2 }}
+              animate={{ opacity: [0.2, 0.3, 0.2] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
+        </div>
+
+        {/* Watchlist Modal */}
+        {showWatchlistModal && (
+          <WatchlistModal
+            watchlist={watchlist}
+            onClose={handleCloseModal}
+            isLoading={isLoadingWatchlist}
+            selectedAnimeIndex={selectedAnimeIndex}
+            setSelectedAnimeIndex={setSelectedAnimeIndex}
+          />
+        )}
+      </div>
     </div>
   );
 }
-
 
 function WatchlistModal({
   watchlist,
@@ -173,7 +200,6 @@ function WatchlistModal({
   setSelectedAnimeIndex: (index: number | null) => void;
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  console.log(watchlist)
 
   const handleNextImage = () => {
     if (selectedAnimeIndex !== null) {
@@ -196,9 +222,9 @@ function WatchlistModal({
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -211,166 +237,269 @@ function WatchlistModal({
     });
   };
 
-  const containerWidth = 800; 
+  const containerWidth = 800;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="relative bg-white dark:bg-neutral-900 rounded-lg shadow-2xl w-11/12 max-w-4xl p-6 flex flex-col"
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="relative bg-white dark:bg-neutral-900 rounded-lg shadow-2xl w-11/12 max-w-5xl p-6 flex flex-col"
         role="dialog"
         aria-labelledby="watchlist-title"
         aria-modal="true"
       >
-        <button
+        <Button
           onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-900 dark:text-white hover:text-red-500 transition-transform transform hover:scale-110"
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
           aria-label="Close Watchlist"
         >
           <X size={24} />
-        </button>
+        </Button>
 
         <h3
           id="watchlist-title"
-          className="text-2xl font-semibold text-neutral-900 dark:text-white mb-6 text-center"
+          className="text-3xl font-bold text-neutral-900 dark:text-white mb-6 text-center"
         >
           My Watchlist
         </h3>
 
         {isLoading ? (
-          <p className="text-center text-neutral-500 dark:text-neutral-400">
-            Loading...
-          </p>
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
         ) : (
-          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-            <motion.ul
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                duration: 0.5,
-                ease: 'easeOut',
-                staggerChildren: 0.1,
-              }}
-              className="w-full md:w-1/3 overflow-auto space-y-2"
-            >
-              {watchlist.map((item, index) => (
-                <motion.li
-                  key={item.panel.id}
-                  whileHover={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    borderColor: '#2563eb',
-                    borderWidth: 2,
-                  }}
-                  className={`p-3 rounded-lg transition-all duration-300 cursor-pointer ${
-                    selectedAnimeIndex === index
-                      ? 'bg-neutral-800 dark:bg-neutral-700 dark:text-neutral-400 text-neutral-600 border-blue-500'
-                      : 'border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white'
-                  }`}
-                  onClick={() => {
-                    setSelectedAnimeIndex(index);
-                    setCurrentImageIndex(0); 
-                  }}
-                  tabIndex={0}
-                  role="button"
-                  aria-pressed={selectedAnimeIndex === index}
-                >
-                  <div className="flex items-center space-x-4">
-                    <Image
-                      src={item.panel.images.thumbnail[0][0].source} // Safely access the first thumbnail
-                      alt={item.panel.title}
-                      width={50}
-                      height={50}
-                      className="rounded-md"
-                    />
-                    <div>
-                      <h4 className="text-sm font-medium">
-                        {item.panel.episode_metadata.series_title}
-                      </h4>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        {"Rated: " + item.panel.episode_metadata.maturity_ratings ||
-                          item.panel.promo_title}
-                      </p>
+          <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6">
+            <ScrollArea className="w-full lg:w-1/3 h-[calc(100vh-200px)] pr-4">
+              <AnimatePresence>
+                {watchlist.map((item, index) => (
+                  <motion.div
+                    key={item.panel.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                  >
+                    <div
+                      className={`mb-4 cursor-pointer transition-all duration-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg ${
+                        selectedAnimeIndex === index
+                          ? "ring-2 ring-blue-500 dark:ring-blue-400"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setSelectedAnimeIndex(index);
+                        setCurrentImageIndex(0);
+                      }}
+                    >
+                      <div className="relative">
+                        <Image
+                          src={item.panel.images.thumbnail[0][0].source}
+                          alt={item.panel.title}
+                          width={320}
+                          height={180}
+                          className="w-full h-40 object-cover"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={` ${
+                              item.is_favorite
+                                ? "text-pink-600"
+                                : "hidden"
+                            }`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // for in future updation of the toggle favorite logic here
+                            }}
+                          >
+                            <Heart
+                              size={24}
+                              fill={item.is_favorite ? "currentColor" : "none"}
+                            />
+                          </Button>
+                        </div>
+                        {item.new && (
+                          <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            NEW
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4 bg-white dark:bg-neutral-800">
+                        <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-1 line-clamp-1">
+                          {item.panel.episode_metadata.series_title}
+                        </h4>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2 line-clamp-1">
+                          {item.panel.episode_metadata.episode_title}
+                        </p>
+                        <div className="flex justify-between items-center text-xs text-neutral-500 dark:text-neutral-400">
+                          <span>
+                            Ep {item.panel.episode_metadata.episode_number}
+                          </span>
+                          <span>
+                            {Math.floor(
+                              item.panel.episode_metadata.duration_ms / 60000
+                            )}{" "}
+                            min
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </motion.li>
-              ))}
-            </motion.ul>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </ScrollArea>
 
-            {/* Selected Anime Details */}
-            <div className="w-full md:w-2/3 p-4 flex justify-center items-center relative">
-              {selectedAnimeIndex !== null && !isLoading ? (
-                <motion.div
-                  key={selectedAnimeIndex}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                  className="flex flex-col space-y-4"
-                >
-                  {/* Image Carousel */}
-                  <div className="relative">
-                    <Image
-                      src={
-                        getBestThumbnail(
-                          watchlist[selectedAnimeIndex].panel.images.thumbnail[0],
-                          containerWidth
-                        ).source
-                      }
-                      alt={watchlist[selectedAnimeIndex].panel.title}
-                      width={containerWidth}
-                      height={(containerWidth / 16) * 9}
-                      className="rounded-lg shadow-md"
-                    />
-                    <button
-                      onClick={handlePrevImage}
-                      className="absolute left-0 top-1/2 transform -translate-y-1/2 text-neutral-900 dark:text-white hover:text-blue-500"
-                      aria-label="Previous Image"
-                    >
-                      <ChevronLeft size={24} />
-                    </button>
-                    <button
-                      onClick={handleNextImage}
-                      className="absolute right-0 top-1/2 transform -translate-y-1/2 text-neutral-900 dark:text-white hover:text-blue-500"
-                      aria-label="Next Image"
-                    >
-                      <ChevronRight size={24} />
-                    </button>
-                  </div>
+            <div className="w-full lg:w-2/3 flex justify-center items-start">
+              <AnimatePresence mode="wait">
+                {selectedAnimeIndex !== null && !isLoading ? (
+                  <motion.div
+                    key={selectedAnimeIndex}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="w-full"
+                  >
+                    <div className="relative aspect-video mb-4">
+                      <Image
+                        src={
+                          getBestThumbnail(
+                            watchlist[selectedAnimeIndex].panel.images
+                              .thumbnail[0],
+                            containerWidth
+                          ).source
+                        }
+                        alt={watchlist[selectedAnimeIndex].panel.title}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg shadow-md"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg"></div>
+                      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
+                        <Link
+                          target="_blank"
+                          href={
+                            constructAnimeUrl(
+                              watchlist[selectedAnimeIndex]
+                                .panel as WatchListPanel
+                            ) as Url
+                          }
+                        >
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="flex shadow-none items-center space-x-2"
+                          >
+                            <Play size={16} />
+                            <span>Play</span>
+                          </Button>
+                        </Link>
+                        <div className="flex space-x-2">
+                          {watchlist[selectedAnimeIndex].is_favorite ? (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="text-pink-700 cursor-default border-none"
+                            >
+                              <Heart fill="currentColor" size={24} />
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="text-white shadow-none cursor-default border-none"
+                            >
+                              <Heart size={24} />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        onClick={handlePrevImage}
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white"
+                        aria-label="Previous Image"
+                      >
+                        <ChevronLeft size={24} />
+                      </Button>
+                      <Button
+                        onClick={handleNextImage}
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white"
+                        aria-label="Next Image"
+                      >
+                        <ChevronRight size={24} />
+                      </Button>
+                    </div>
 
-                  {/* Anime Details */}
-                  <div>
-                    <h4 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">
-                      {watchlist[selectedAnimeIndex].panel.title}
-                    </h4>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-2">
-                      {watchlist[selectedAnimeIndex].panel.description}
-                    </p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      Season{' '}
-                      {watchlist[selectedAnimeIndex].panel.episode_metadata
-                        .season_number || 'N/A'}
-                      , Episode{' '}
-                      {watchlist[selectedAnimeIndex].panel.episode_metadata
-                        .episode_number || 'N/A'}{' '}
-                      -{' '}
-                      {formatDate(
-                        watchlist[selectedAnimeIndex].panel.episode_metadata
-                          .episode_air_date || ''
-                      )}
-                    </p>
-                  </div>
-                </motion.div>
-              ) : (
-                <p className="text-center text-neutral-500 dark:text-neutral-400">
-                  Select an anime to view details.
-                </p>
-              )}
+                    <div className="space-y-4">
+                      <h4 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                        {
+                          watchlist[selectedAnimeIndex].panel.episode_metadata
+                            .series_title
+                        }
+                      </h4>
+                      <p className="text-lg font-semibold text-neutral-700 dark:text-neutral-300">
+                        {
+                          watchlist[selectedAnimeIndex].panel.episode_metadata
+                            .episode_title
+                        }
+                      </p>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        {watchlist[selectedAnimeIndex].panel.description}
+                      </p>
+                      <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400">
+                        <span>
+                          Season{" "}
+                          {
+                            watchlist[selectedAnimeIndex].panel.episode_metadata
+                              .season_number
+                          }
+                        </span>
+                        <span>
+                          Episode{" "}
+                          {
+                            watchlist[selectedAnimeIndex].panel.episode_metadata
+                              .episode_number
+                          }
+                        </span>
+                        <span>
+                          {formatDate(
+                            watchlist[selectedAnimeIndex].panel.episode_metadata
+                              .episode_air_date
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center justify-center h-64 text-neutral-500 dark:text-neutral-400"
+                  >
+                    Select an anime to view details.
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         )}
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
