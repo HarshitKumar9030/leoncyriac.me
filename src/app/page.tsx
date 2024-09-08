@@ -30,7 +30,7 @@ export default function Home() {
           <section aria-label="Introduction" className="space-y-4">
             <p className="text-base md:text-lg text-muted-foreground">
               Hello there! This is Harshit, also known as{" "}
-              <Highlight href="https://leoncyriac.me">LeonCyriac</Highlight>. I'm a self-taught{" "}
+              <Highlight href="https://leoncyriac.me">LeonCyriac</Highlight>. I&apos;m a self-taught{" "}
               <Highlight>full-stack developer</Highlight> and a student from{" "}
               <Highlight href="https://en.wikipedia.org/wiki/India">India</Highlight>, with a 
               passion for crafting modern web technologies. My journey is rooted in a deep 
@@ -69,7 +69,7 @@ export default function Home() {
                   and integrating AI-powered features into web applications.
                 </p>
                 <p className="text-base md:text-lg text-muted-foreground">
-                  Beyond technology, I'm deeply passionate about anime. Whether it's the intense 
+                  Beyond technology, I&apos;m deeply passionate about anime. Whether it&apos;s the intense 
                   battles in <Highlight>Naruto</Highlight>, the complex narratives of{" "}
                   <Highlight>Attack on Titan</Highlight>, or the inspirational journey of 
                   characters in <Highlight>My Hero Academia</Highlight>, anime has a way of 

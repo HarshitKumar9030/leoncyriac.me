@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/tooltip";
 import Beam from "@/components/ui/Beam";
 import { WritingsHeading } from "./writings-heading";
-
+import Image from "next/image";
+import { CustomLink } from "../common/CustomLink";
 type Tag = {
   id: number;
   name: string;
@@ -118,15 +119,16 @@ const BlogCard: React.FC<BlogPost> = ({
 
         <div className="p-3 relative z-10">
           <div className="relative h-48 w-full mb-4 overflow-hidden rounded-lg">
-            <img
-              src={image}
+            <Image
+              src={image as string}
               alt={title}
+              layout="fill"
               className="object-cover w-full h-full"
             />
             <div className="absolute inset-0 bg-black bg-opacity-30 transition-opacity group-hover:bg-opacity-20" />
           </div>
 
-          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {title}
           </h2>
           <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-4">
@@ -218,6 +220,9 @@ export default function Writings() {
         {blogPosts.map((post) => (
           <BlogCard key={post.id} {...post} />
         ))}
+      </div>
+      <div className="mt-8 flex justify-end">
+        <CustomLink link="/writings" className="shadow-none px-6 hover:bg-neutral-200 bg-neutral-300 dark:bg-neutral-700 transition-all duration-300 dark:hover:bg-neutral-800">View All</CustomLink>
       </div>
     </div>
   );

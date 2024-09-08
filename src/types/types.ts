@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface TokenResponse {
   access_token: string;
   token_type: string;
@@ -171,4 +173,12 @@ export interface WatchListPanel {
       upload_date: string;
       versions: any[];
     };
+}
+
+export type CustomLink = {
+  link: string;
+  className?: string;
+  target?: string | "_self";
+  variant?: string | "default";
+  children: ReactNode;
 }
