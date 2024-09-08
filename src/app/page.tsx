@@ -1,133 +1,106 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import Image from "next/image";
-import Highlight from "@/components/common/Highlight";
-import Link from "next/link";
-import MyWork from "@/components/home/work";
-import FavoriteAnime from "@/components/home/FavoriteAnime";
+import React, { useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { motion } from "framer-motion"
+import { Twitter } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import Highlight from "@/components/common/Highlight"
+import MyWork from "@/components/home/work"
+import FavoriteAnime from "@/components/home/FavoriteAnime"
+import Writings from "@/components/home/writings"
+import Beam from "@/components/ui/Beam"
 
 export default function Home() {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false)
 
-  const toggleExpansion = () => {
-    setIsExpanded((prev) => !prev);
-  };
+  const toggleExpansion = () => setIsExpanded((prev) => !prev)
 
   return (
-    <>
-      <div className="my-8 flex flex-col items-center justify-center mx-auto max-w-7xl space-y-12 px-4">
-        {/* Introduction Section */}
-        <div className="flex flex-col items-center justify-center space-y-8 text-justify max-w-sm sm:max-w-md md:max-w-lg lg:max-w-[38rem] ">
-          <div className="text text-base font-light md:text-lg text-gray-700 dark:text-gray-300">
-            Hello there! This is Harshit, also known as{" "}
-            <Highlight href="https://leoncyriac.me">LeonCyriac</Highlight>.
-            I&apos;m a self-taught <Highlight>full-stack developer</Highlight>{" "}
-            and a student from{" "}
-            <Highlight href="https://en.wikipedia.org/wiki/India">
-              India
-            </Highlight>
-            , with a passion for crafting modern web technologies. My journey is
-            rooted in a deep fascination for <Highlight>JavaScript</Highlight>,
-            exploring the vast landscape of{" "}
-            <Highlight>LLMs (Large Language Models)</Highlight>, and creating
-            intelligent solutions with{" "}
-            <Highlight href="https://openai.com/">AI</Highlight>.
-          </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="my-8 flex flex-col items-center justify-center mx-auto max-w-7xl space-y-12 px-4"
+    >
+      <Card className="w-full border-none shadow-none max-w-3xl">
+        <CardContent className="p-2 space-y-6">
+          <section aria-label="Introduction" className="space-y-4">
+            <p className="text-base md:text-lg text-muted-foreground">
+              Hello there! This is Harshit, also known as{" "}
+              <Highlight href="https://leoncyriac.me">LeonCyriac</Highlight>. I'm a self-taught{" "}
+              <Highlight>full-stack developer</Highlight> and a student from{" "}
+              <Highlight href="https://en.wikipedia.org/wiki/India">India</Highlight>, with a 
+              passion for crafting modern web technologies. My journey is rooted in a deep 
+              fascination for <Highlight>JavaScript</Highlight>, exploring the vast landscape 
+              of <Highlight>LLMs (Large Language Models)</Highlight>, and creating intelligent 
+              solutions with <Highlight href="https://openai.com/">AI</Highlight>.
+            </p>
 
-          {isExpanded && (
-            <>
-              <div className="text text-base font-light md:text-lg text-gray-700 dark:text-gray-300">
-                My expertise lies in building responsive and high-performance
-                applications using{" "}
-                <Highlight href="https://nextjs.org/">Next.js</Highlight>,{" "}
-                <Highlight href="https://reactjs.org/">React</Highlight>, and{" "}
-                <Highlight href="https://tailwindcss.com/">
-                  Tailwind CSS
-                </Highlight>
-                . I also have a strong command of{" "}
-                <Highlight>TypeScript</Highlight> and{" "}
-                <Highlight href="https://nodejs.org/">Node.js</Highlight>,
-                enabling me to develop scalable and maintainable solutions. My
-                journey began as a curious student, and over time, I have
-                sharpened my skills through hands-on projects, continuous
-                learning, and active participation in the developer community.
+            <motion.div
+              initial={isExpanded ? { height: 0, opacity: 0 } : { height: "auto", opacity: 1 }}
+              animate={isExpanded ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="space-y-4">
+                <p className="text-base md:text-lg text-muted-foreground">
+                  My expertise lies in building responsive and high-performance applications using{" "}
+                  <Highlight href="https://nextjs.org/">Next.js</Highlight>,{" "}
+                  <Highlight href="https://reactjs.org/">React</Highlight>, and{" "}
+                  <Highlight href="https://tailwindcss.com/">Tailwind CSS</Highlight>. I also 
+                  have a strong command of <Highlight>TypeScript</Highlight> and{" "}
+                  <Highlight href="https://nodejs.org/">Node.js</Highlight>, enabling me to 
+                  develop scalable and maintainable solutions.
+                </p>
+                <p className="text-base md:text-lg text-muted-foreground">
+                  I am driven by the ever-evolving world of technology and constantly seek to 
+                  explore new trends, particularly in{" "}
+                  <Highlight href="https://www.ibm.com/cloud/learn/machine-learning">AI</Highlight>{" "}
+                  and{" "}
+                  <Highlight href="https://en.wikipedia.org/wiki/Machine_learning">
+                    machine learning
+                  </Highlight>. I am currently delving into advanced concepts like{" "}
+                  <Highlight href="https://en.wikipedia.org/wiki/Large_language_model">
+                    large language models (LLMs)
+                  </Highlight>{" "}
+                  and integrating AI-powered features into web applications.
+                </p>
+                <p className="text-base md:text-lg text-muted-foreground">
+                  Beyond technology, I'm deeply passionate about anime. Whether it's the intense 
+                  battles in <Highlight>Naruto</Highlight>, the complex narratives of{" "}
+                  <Highlight>Attack on Titan</Highlight>, or the inspirational journey of 
+                  characters in <Highlight>My Hero Academia</Highlight>, anime has a way of 
+                  connecting deeply with its audience.
+                </p>
               </div>
+            </motion.div>
+          </section>
 
-              <div className="text text-base font-light md:text-lg text-gray-700 dark:text-gray-300">
-                I am driven by the ever-evolving world of technology and
-                constantly seek to explore new trends, particularly in{" "}
-                <Highlight href="https://www.ibm.com/cloud/learn/machine-learning">
-                  AI
-                </Highlight>{" "}
-                and{" "}
-                <Highlight href="https://en.wikipedia.org/wiki/Machine_learning">
-                  machine learning
-                </Highlight>
-                . I am currently delving into advanced concepts like{" "}
-                <Highlight href="https://en.wikipedia.org/wiki/Large_language_model">
-                  large language models (LLMs)
-                </Highlight>{" "}
-                and integrating AI-powered features into web applications. My
-                goal is to combine aesthetics and functionality to create{" "}
-                <Highlight href="https://tailwindcss.com/">
-                  beautiful applications
-                </Highlight>{" "}
-                that are both intuitive and powerful.
-              </div>
-              <div className="text text-base font-light md:text-lg text-gray-700 dark:text-gray-300">
-                Beyond technology, I&apos;m deeply passionate about anime. I
-                find anime&apos;s storytelling to be incredibly diverse and
-                captivating, offering a unique blend of action, drama, and
-                emotion that no other medium provides. Whether it&apos;s the
-                intense battles in <Highlight>Naruto</Highlight>, the complex
-                narratives of <Highlight>Attack on Titan</Highlight>, or the
-                inspirational journey of characters in{" "}
-                <Highlight>My Hero Academia</Highlight>, anime has a way of
-                connecting deeply with its audience. It&apos;s not just
-                entertainment; it&apos;s an exploration of ideas, cultures, and
-                philosophies that inspire and energize me daily.
-              </div>
-            </>
-          )}
-
-          {/* Buttons */}
-          <div className="flex justify-between w-full">
-            <Link href={"https://x.com/OhHarshit"}>
-              <button className="mt-4 px-6 py-2 dark:text-black flex items-center text-sm gap-2 font-medium text-neutral-900  bg-[#f8f4f4] cursor-nesw-resize dark:bg-white rounded-lg transition-all duration-300 transform hover:scale-105">
-                <span className="w-6 h-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="rgb(0,0,0)"
-                    shapeRendering="geometricPrecision"
-                    textRendering="geometricPrecision"
-                    imageRendering="optimizeQuality"
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    viewBox="0 0 512 462.799"
-                  >
-                    <path
-                      fillRule="nonzero"
-                      d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"
-                    />
-                  </svg>
-                </span>
-                Find me on X.
-              </button>
-            </Link>
-
-            <button
+          <div className="flex relative flex-col sm:flex-row justify-between items-center gap-4">
+            <Button asChild className="w-2/3 rounded-lg mx-4 sm:mx-0 py-1.5 px-4 space-x-1 shadow-none bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-300 hover:scale-105 duration-300 transition-all cursor-nesw-resize text-neutral-600 sm:w-auto">
+              <Link href="https://x.com/OhHarshit" className="flex items-center gap-2">
+                <Twitter className="w-5 h-5" />
+                Find me on X
+              </Link>
+            </Button>
+            <Button
+            
               onClick={toggleExpansion}
-              className="mt-4 px-4 py-2 text-sm font-medium text-neutral-900 dark:text-neutral-50 hover:text-neutral-950 hover:dark:text-white p-2 underline underline-offset-1  rounded-lg transition duration-300"
+              variant="ghost"
+              className="w-2/3 mx-4 rounded-lg sm:mx-0 py-1.5 px-4 space-x-1 shadow-none bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-300 hover:scale-105 duration-300 transition-all cursor-pointer text-neutral-600 sm:w-auto"
             >
               {isExpanded ? "Read Less" : "Read More"}
-            </button>
+            </Button>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <MyWork />
-        <FavoriteAnime />
-      </div>
-    </>
-  );
+      <MyWork />
+      <FavoriteAnime />
+      <Writings />
+    </motion.div>
+  )
 }

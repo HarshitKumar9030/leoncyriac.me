@@ -26,6 +26,14 @@ const config = {
       },
     },
     extend: {
+      backgroundImage: {
+        'light-gradient': 'linear-gradient(to right, #f8f4f4 1px, transparent 1px), linear-gradient(to bottom, #f8f4f4 1px, transparent 1px)',
+        'dark-gradient': 'linear-gradient(to right, #1a202c 1px, transparent 1px), linear-gradient(to bottom, #1a202c 1px, transparent 1px)',
+      },
+      maskImage: {
+        'light-radial': 'radial-gradient(ellipse 50% 50% at 50% 50%, #fff 70%, transparent 100%)',
+        'dark-radial': 'radial-gradient(ellipse 50% 50% at 50% 50%, #2d3748 70%, transparent 100%)',
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

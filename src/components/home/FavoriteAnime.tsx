@@ -1,26 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { fetchAnime } from "@/lib/anime";
 import { getWatchList } from "@/lib/crunchyroll";
 import { WatchlistItem2, WatchListPanel } from "@/types/types";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Heart,
-  Play,
-  Plus,
-  X,
-  HeartCrack,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Play, Tv, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
-import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { constructAnimeUrl } from "@/lib/url_constructor";
 import { Url } from "next/dist/shared/lib/router/router";
+import { AnimeHeading } from "./anime-heading";
 
 interface Anime {
   mal_id: number;
@@ -47,18 +38,26 @@ interface ImageWithSkeletonProps {
 
 export default function FavoriteAnime() {
   const [animeList, setAnimeList] = useState<Anime[]>([]);
-  const [visibleAnimeCount, setVisibleAnimeCount] = useState(6);
+  const [visibleAnimeCount, setVisibleAnimeCount] = useState(3); // set the visible anime count here.
   const [showWatchlistModal, setShowWatchlistModal] = useState(false);
   const [watchlist, setWatchlist] = useState<WatchlistItem2[]>([]);
   const [isLoadingWatchlist, setIsLoadingWatchlist] = useState(false);
   const [selectedAnimeIndex, setSelectedAnimeIndex] = useState<number | null>(
     null
   );
+  const [isLoadingAnime, setIsLoadingAnime] = useState(true);
 
   useEffect(() => {
     const getAnimeData = async () => {
-      const data = await fetchAnime();
-      setAnimeList(data);
+      setIsLoadingAnime(true);
+      try {
+        const data = await fetchAnime();
+        setAnimeList(data);
+      } catch (error) {
+        console.error("Error fetching anime data:", error);
+      } finally {
+        setIsLoadingAnime(false);
+      }
     };
 
     getAnimeData();
@@ -86,55 +85,77 @@ export default function FavoriteAnime() {
   };
 
   return (
-    <div className="mt-16 mx-4 lg:mx-8">
-      <h2 className="text-4xl font-bold text-center mb-12 text-neutral-900 dark:text-white">
-        My Favorite Animes
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {animeList.slice(0, visibleAnimeCount).map((anime, index) => (
-          <AnimeCard key={anime.mal_id} anime={anime} index={index} />
-        ))}
-      </div>
+    <div className="!mt-28  mx-4 lg:mx-8">
+      <div className="relative">
 
-      {visibleAnimeCount < animeList.length && (
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={handleSeeMore}
-            className="px-6 py-2 dark:text-black flex items-center text-sm gap-2 font-medium text-neutral-900  bg-[#f8f4f4] cursor-nesw-resize dark:bg-white rounded-lg transition-all duration-300 transform hover:scale-105"
-          >
-            See More
-          </button>
+      <AnimeHeading />
+      <motion.div 
+        className="absolute hidden md:block -top-8 md:-top-12 md:right-0 right-[26px] w-64 h-64 dark:bg-neutral-100/5 bg-neutral-800/5 rounded-full"
+        animate={{
+          scale: [1, 1.1, 1],
+          rotate: [0, 90, 0],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
+
+      </div>
+     
+      {isLoadingAnime ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
         </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {animeList.slice(0, visibleAnimeCount).map((anime, index) => (
+              <AnimeCard key={anime.mal_id} anime={anime} index={index} />
+            ))}
+          </div>
+          {visibleAnimeCount < animeList.length && (
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={handleSeeMore}
+                className="px-4 sm:px-6 py-2 mt-4 sm:mt-6 text-xs sm:text-sm font-medium text-neutral-500 bg-neutral-300 dark:text-neutral-900 dark:bg-white rounded-lg hover:bg-neutral-200 transition-all duration-300"
+              >
+                See More
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* Watchlist Component */}
-      <div className="relative overflow-hidden">
+      <div className="relative my-16">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex items-center justify-between p-6 !bg-opacity-[0.98] bg-white dark:bg-neutral-800 rounded-xl shadow-lg mx-auto my-8"
+          className="flex items-center border-4 dark:border-neutral-700 border-neutral-300 !bg-opacity-80 justify-between p-6 bg-white dark:bg-neutral-800 rounded-xl dark:shadow-lg mx-auto my-8"
         >
           <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="flex items-center space-x-6"
+            className="flex items-center md:flex-row flex-col"
           >
             <Image
               src="/crunchyroll_hime.png"
               alt="Crunchyroll Mascot"
-              width={100}
-              height={100}
+              width={200}
+              height={200}
               className="rounded-full"
               priority
             />
-            <div className="flex flex-col">
+            <div className="flex flex-col mx-auto items-center md:items-start p-4 sm:p-6 md:p-8 lg:p-12">
               <motion.h1
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
-                className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-2"
+                className="text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-2 text-center"
               >
                 My Watchlist
               </motion.h1>
@@ -142,26 +163,26 @@ export default function FavoriteAnime() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.5 }}
-                className="text-sm md:text-base text-neutral-600 dark:text-neutral-400 max-w-md"
+                className="text-sm sm:text-base md:text-lg text-neutral-600 dark:text-neutral-400 text-center md:text-start max-w-md lg:max-w-lg"
               >
-                Stay up to date with your favorites and discover new anime to
-                add to your list anytime.
+                Stay up to date with my favorites and what I am watching. <br />
+                Check out my watchlist for more!
               </motion.p>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleOpenWatchlist}
+                className="px-4 sm:px-6 py-2 mt-4 sm:mt-6 text-xs sm:text-sm font-medium text-neutral-500 bg-neutral-300 dark:text-neutral-900 dark:bg-white rounded-lg hover:bg-neutral-200 transition-all duration-300"
+              >
+                Show Watchlist
+              </motion.button>
             </div>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleOpenWatchlist}
-              className="px-6 py-2 text-sm font-medium text-neutral-900 bg-[#f8f4f4] dark:text-neutral-900 dark:bg-white rounded-lg shadow-md hover:bg-neutral-100 transition-all duration-300"
-            >
-              Show Watchlist
-            </motion.button>
           </motion.div>
         </motion.div>
 
-        {/* Grid Animation */}
-        <div className="absolute inset-0 -z-10 h-full w-full">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#f8f4f4_1px,transparent_1px),linear-gradient(to_bottom,#f8f4f4_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#fff_70%,transparent_100%)]">
+        {/* Grid */}
+        <div className="absolute inset-0 opacity-30 -z-10 h-full w-full">
+          <div className="absolute inset-0 dark:bg-[linear-gradient(to_right,#f8f4f4_1px,transparent_1px),linear-gradient(to_bottom,#f8f4f4_1px,transparent_1px)] dark:bg-[size:14px_24px] dark:[mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#fff_70%,transparent_100%)] bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#0101010_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]">
             <motion.div
               className="absolute inset-0"
               initial={{ opacity: 0.2 }}
@@ -185,7 +206,6 @@ export default function FavoriteAnime() {
     </div>
   );
 }
-
 function WatchlistModal({
   watchlist,
   onClose,
@@ -313,9 +333,7 @@ function WatchlistModal({
                             variant="ghost"
                             size="icon"
                             className={` ${
-                              item.is_favorite
-                                ? "text-pink-600"
-                                : "hidden"
+                              item.is_favorite ? "text-pink-600" : "hidden"
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -504,73 +522,89 @@ function WatchlistModal({
 }
 
 function AnimeCard({ anime, index }: AnimeCardProps) {
-  const { ref, inView } = useInView({ threshold: 0.2 });
   const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
   useEffect(() => {
     if (inView) {
-      controls.start({
-        x: 0,
-        y: 0,
-        opacity: 1,
-        rotate: [0, 2, -2, 1, 0],
-        transition: {
-          duration: 1.2,
-          type: "spring",
-          stiffness: 80,
-          bounce: 0.4,
-        },
-      });
+      controls.start("visible");
     }
   }, [controls, inView]);
 
-  const initialX = index % 2 === 0 ? "-100%" : "100%";
-  const initialY = 50 * (index + 1);
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.9, rotateY: -10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      rotateY: 0,
+      transition: {
+        duration: 0.6,
+        delay: index * 0.1,
+        ease: [0.43, 0.13, 0.23, 0.96],
+      },
+    },
+  };
 
   return (
     <motion.div
       ref={ref}
-      className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col"
-      initial={{ x: initialX, y: initialY, opacity: 0 }}
+      initial="hidden"
       animate={controls}
-      whileHover={{ scale: 1.05, rotate: 1 }}
+      variants={cardVariants}
+      className="relative rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex-shrink-0 md:flex-shrink bg-white dark:bg-gray-800"
+      whileHover={{
+        scale: 1.05,
+        rotateY: 5,
+        transition: { duration: 0.2 },
+      }}
     >
-      <ImageWithSkeleton
-        src={anime.images.jpg.image_url}
-        alt={anime.title}
-        width={220}
-        height={340}
-        priority={false}
-      />
+      <div className="relative h-96 md:w-full md:h-[360px]">
+        <Image
+          src={anime.images.jpg.image_url}
+          alt={anime.title}
+          layout="fill"
+          objectFit="cover"
+          className="rounded-xl"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-xl"></div>
+        <div className="absolute bottom-4 left-4 right-4">
+          <h3 className="text-white text-lg font-semibold line-clamp-2">
+            {anime.title}
+          </h3>
+        </div>
+      </div>
     </motion.div>
   );
 }
+// function ImageWithSkeleton({
+//   src,
+//   alt,
+//   width,
+//   height,
+//   priority = false,
+// }: ImageWithSkeletonProps) {
+//   const [isLoaded, setIsLoaded] = useState(false);
 
-function ImageWithSkeleton({
-  src,
-  alt,
-  width,
-  height,
-  priority = false,
-}: ImageWithSkeletonProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  return (
-    <div className="relative w-full">
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-r from-neutral-200 via-neutral-300 to-neutral-200 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-700 animate-pulse rounded-t-xl" />
-      )}
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        onLoadingComplete={() => setIsLoaded(true)}
-        className={`object-cover w-full h-[360px] rounded-t-xl transition-opacity duration-500 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
-        priority={priority}
-      />
-    </div>
-  );
-}
+//   return (
+//     <div className="relative w-full h-[360px]">
+//       {!isLoaded && (
+//         <div className="absolute inset-0 bg-gradient-to-r from-neutral-200 via-neutral-300 to-neutral-200 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-700 animate-pulse rounded-t-xl" />
+//       )}
+//       <Image
+//         src={src}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         onLoadingComplete={() => setIsLoaded(true)}
+//         className={`object-cover w-full h-full rounded-xl transition-opacity duration-500 ${
+//           isLoaded ? "opacity-100" : "opacity-0"
+//         }`}
+//         priority={priority}
+//       />
+//     </div>
+//   );
+// }
