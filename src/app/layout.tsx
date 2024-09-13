@@ -4,8 +4,10 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import Navbar from "@/components/common/Navbar";
 import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/common/Footer";
+import ProgressiveScrollBlur from "@/components/common/scroll-blur";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Harshit - LeonCyriac | Developer Portfolio",
@@ -26,11 +28,17 @@ export default function RootLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <body className={`${inter.className} dark:bg-neutral-900 bg-neutral-50`}>
+        <body
+          className={`${inter.variable} ${inter.className} antialiased dark:bg-neutral-900 bg-neutral-50`}
+        >
           <Navbar />
-          <main className="pointer-events-auto">{children}
-              <Toaster />
-            </main>
+          <main className="pointer-events-auto">
+            <ProgressiveScrollBlur>
+              {children}
+            </ProgressiveScrollBlur>
+            <Toaster />
+          </main>
+          <Footer />
         </body>
       </ThemeProvider>
     </html>
