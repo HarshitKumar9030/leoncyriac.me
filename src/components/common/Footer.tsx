@@ -134,7 +134,7 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="py-8 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
+    <footer id="footer" className="py-8 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="flex flex-col items-center md:items-start mb-6 md:mb-0">

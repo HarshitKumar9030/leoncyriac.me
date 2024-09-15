@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { Suspense, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -12,8 +12,15 @@ import MyWork from "@/components/home/work"
 import FavoriteAnime from "@/components/home/FavoriteAnime"
 import Writings from "@/components/home/writings"
 import Beam from "@/components/ui/Beam"
+import { getCurrentTrack } from "@/lib/spotify"
+import NowPlaying from "@/components/spotify/spotify-client"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// import type { Track } from "@/components/spotify/spotify-client"
 
 export default function Home() {
+  const initialTrack = getCurrentTrack()
+
   const [isExpanded, setIsExpanded] = useState(false)
 
   const toggleExpansion = () => setIsExpanded((prev) => !prev)
@@ -101,6 +108,9 @@ export default function Home() {
       <MyWork />
       <FavoriteAnime />
       <Writings />
+    <Suspense fallback={<Skeleton className="w-10 h-10 rounded-full" />}>
+      <NowPlaying initialTrack={initialTrack as any} />
+    </Suspense>
     </motion.div>
   )
 }
