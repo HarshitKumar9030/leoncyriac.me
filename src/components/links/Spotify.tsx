@@ -163,7 +163,7 @@ export default function NowPlaying() {
               isCurrentTrack={true}
             />
           ) : (
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+            <p className="text-sm text-neutral-600 border border-neutral-300 dark:border-neutral-700 dark:text-neutral-400 p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
               No track currently playing
             </p>
           )}
@@ -180,7 +180,7 @@ export default function NowPlaying() {
               isCurrentTrack={false}
             />
           ) : (
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+            <p className="text-sm text-neutral-600 border border-neutral-300 dark:border-neutral-700 dark:text-neutral-400 p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
               No recent tracks
             </p>
           )}
