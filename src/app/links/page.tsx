@@ -22,6 +22,7 @@ import { DonationSection } from "@/components/links/Donate";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PulseBeams } from "@/components/ui/PulseBeam";
 import { GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
+import SpotifyAbout from "@/components/links/Spotify";
 
 type Link = {
   id: number;
@@ -107,7 +108,6 @@ const links: Link[] = [
 export const LinkCard: React.FC<Link> = ({ title, url, icon, color }) => {
   return (
     <motion.div className="w-full mb-2 border backdrop-blur-md rounded-xl border-neutral-300 dark:border-neutral-700 relative overflow-hidden group">
-      {/* Animated background */}
       <div className="absolute inset-0">
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"
@@ -300,6 +300,7 @@ export default function LinksPage() {
             <LinkCardList links={links} />
           </div>
         </AnimatePresence>
+        <SpotifyAbout />
         <DonationSection />
         <motion.p
           initial={{ opacity: 0 }}

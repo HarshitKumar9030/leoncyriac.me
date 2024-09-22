@@ -34,7 +34,7 @@ export default function Home() {
     >
       <Card className="w-full border-none shadow-none max-w-3xl">
         <CardContent className="p-2 space-y-6">
-          <section aria-label="Introduction" className="space-y-4">
+          <section aria-label="Introduction" className="space-y-4 text-center md:text-start">
             <p className="text-base md:text-lg text-muted-foreground">
               Hello there! This is Harshit, also known as{" "}
               <Highlight href="https://leoncyriac.me">LeonCyriac</Highlight>. I&apos;m a self-taught{" "}
@@ -52,7 +52,7 @@ export default function Home() {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <div className="space-y-4">
+              <div className="space-y-4 ">
                 <p className="text-base md:text-lg text-muted-foreground">
                   My expertise lies in building responsive and high-performance applications using{" "}
                   <Highlight href="https://nextjs.org/">Next.js</Highlight>,{" "}
