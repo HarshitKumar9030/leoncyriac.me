@@ -1,0 +1,64 @@
+---
+title: 'Sample Blog Post'
+date: '2023-06-01'
+readingTime: 5
+image: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2560&q=80'
+excerpt: 'This is a sample blog post demonstrating various features of our MDX-powered blog.'
+---
+
+import Timeline from '../components/Timeline'
+import BlurImage from '../components/BlurImage'
+
+# Welcome to My Blog
+
+This is a sample blog post demonstrating various features.
+
+## Table of Contents
+
+You'll see a table of contents generated automatically based on the headings in this post.
+
+## Images with Lazy Loading and Blur Effect
+
+Here's an example of an image with lazy loading and a blur effect:
+
+<BlurImage src="https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2560&q=80" alt="Sample Image" />
+
+## Custom Timeline Component
+
+Here's a timeline of events:
+
+<Timeline
+  items={[
+    {
+      date: '2023-01-01',
+      title: 'New Year',
+      description: 'Celebrated the beginning of a new year'
+    },
+    {
+      date: '2023-03-15',
+      title: 'Spring Break',
+      description: 'Took a week off to relax and recharge'
+    },
+    {
+      date: '2023-06-01',
+      title: 'Blog Launch',
+      description: 'Launched this amazing blog'
+    }
+  ]}
+/>
+
+## Code Snippet
+
+Here's a code snippet with syntax highlighting:
+
+```javascript
+function greet(name) {
+  console.log(`Hello, ${name}!`);
+}
+
+greet('World');
+```
+
+## Conclusion
+
+This concludes our sample blog post. We've demonstrated various features including a table of contents, images with lazy loading and blur effects, a custom timeline component, and code snippets.

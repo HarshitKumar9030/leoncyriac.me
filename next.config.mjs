@@ -1,3 +1,14 @@
+import nextMDX from '@next/mdx';
+
+const withMDX = nextMDX({
+    extension: /\.mdx?$/,
+    options: {
+      remarkPlugins: [],
+      rehypePlugins: [],
+    },
+  })
+
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
@@ -23,4 +34,4 @@ const nextConfig = {
     }
 };
 
-export default nextConfig;
+export default withMDX(nextConfig);

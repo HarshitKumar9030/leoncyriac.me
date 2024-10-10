@@ -1,20 +1,17 @@
 import type { Config } from "tailwindcss";
+import svgToDataUri from "mini-svg-data-uri";
+import colors from "tailwindcss/colors";
+import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColorPalette";
 
-const svgToDataUri = require("mini-svg-data-uri");
-
-const colors = require("tailwindcss/colors");
-const {
-  default: flattenColorPalette,
-} = require("tailwindcss/lib/util/flattenColorPalette");
-
-const config = {
+const config: Config = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
+    "./pages/**/*.{ts,tsx,mdx}",
     "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx,mdx}",
     "./src/**/*.{ts,tsx}",
     "./data/**/*.{ts,tsx}",
+    "./writings/**/*.mdx",
   ],
   prefix: "",
   theme: {
@@ -27,12 +24,16 @@ const config = {
     },
     extend: {
       backgroundImage: {
-        'light-gradient': 'linear-gradient(to right, #f8f4f4 1px, transparent 1px), linear-gradient(to bottom, #f8f4f4 1px, transparent 1px)',
-        'dark-gradient': 'linear-gradient(to right, #1a202c 1px, transparent 1px), linear-gradient(to bottom, #1a202c 1px, transparent 1px)',
+        "light-gradient":
+          "linear-gradient(to right, #f8f4f4 1px, transparent 1px), linear-gradient(to bottom, #f8f4f4 1px, transparent 1px)",
+        "dark-gradient":
+          "linear-gradient(to right, #1a202c 1px, transparent 1px), linear-gradient(to bottom, #1a202c 1px, transparent 1px)",
       },
       maskImage: {
-        'light-radial': 'radial-gradient(ellipse 50% 50% at 50% 50%, #fff 70%, transparent 100%)',
-        'dark-radial': 'radial-gradient(ellipse 50% 50% at 50% 50%, #2d3748 70%, transparent 100%)',
+        "light-radial":
+          "radial-gradient(ellipse 50% 50% at 50% 50%, #fff 70%, transparent 100%)",
+        "dark-radial":
+          "radial-gradient(ellipse 50% 50% at 50% 50%, #2d3748 70%, transparent 100%)",
       },
       keyframes: {
         "accordion-down": {
@@ -113,10 +114,38 @@ const config = {
         scroll:
           "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
       },
+
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: "65ch",
+            color: "inherit",
+            a: {
+              color: "inherit",
+              opacity: 0.75,
+              fontWeight: "500",
+              textDecoration: "underline",
+              "&:hover": {
+                opacity: 1,
+                color: colors.teal[600],
+              },
+            },
+            b: { color: "inherit" },
+            strong: { color: "inherit" },
+            em: { color: "inherit" },
+            h1: { color: "inherit" },
+            h2: { color: "inherit" },
+            h3: { color: "inherit" },
+            h4: { color: "inherit" },
+            code: { color: "inherit" },
+          },
+        },
+      },
     },
   },
   plugins: [
     require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
     addVariablesForColors,
     function ({ matchUtilities, theme }: any) {
       matchUtilities(
@@ -141,7 +170,7 @@ const config = {
       );
     },
   ],
-} satisfies Config;
+};
 
 function addVariablesForColors({ addBase, theme }: any) {
   let allColors = flattenColorPalette(theme("colors"));
