@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import connectDb from '@/lib/connect';
-import Comment, { IComment, IReply } from '@/models/Comment';
+import Comment, { IComment } from '@/models/Comment';
 import mongoose from 'mongoose';
 
-// Define the shape of the request body
 interface LikeRequestBody {
   replyId?: string;
 }
@@ -12,6 +13,11 @@ export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { id } = params;
   console.log('Received Comment ID:', id);
 
@@ -45,7 +51,6 @@ export async function POST(
     let updatedComment: IComment | null = null;
 
     if (replyId) {
-      // Fetch the main comment
       const comment = await Comment.findById(id);
       if (!comment) {
         return NextResponse.json(
@@ -54,7 +59,6 @@ export async function POST(
         );
       }
 
-      // Find the reply
       const reply = comment.replies.id(replyId);
       if (!reply) {
         return NextResponse.json(
@@ -63,16 +67,10 @@ export async function POST(
         );
       }
 
-      // Increment likes
       reply.likes += 1;
-
-      // Save the updated comment
       await comment.save();
-
-      // Fetch the updated comment as a plain object
       updatedComment = await Comment.findById(id).lean();
     } else {
-      // Like the main comment
       updatedComment = await Comment.findByIdAndUpdate(
         id,
         { $inc: { likes: 1 } },

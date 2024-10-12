@@ -30,6 +30,11 @@ const nextConfig = {
                 hostname: 'www.crunchyroll.com',
                 pathname: '/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'i.scdn.co',
+                pathname: '/**',
+            },
         ]
     }
 };

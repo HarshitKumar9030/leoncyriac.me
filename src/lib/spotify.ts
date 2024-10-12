@@ -9,10 +9,8 @@ const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const REFRESH_TOKEN = process.env.SPOTIFY_REFRESH_TOKEN;
 
 const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
-const PLAYER_ENDPOINT =
-  "https://api.spotify.com/v1/me/player/currently-playing";
-const RECENTLY_PLAYED_ENDPOINT =
-  "https://api.spotify.com/v1/me/player/recently-played";
+const PLAYER_ENDPOINT = "https://api.spotify.com/v1/me/player/currently-playing";
+const RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played";
 
 const TOKEN_CACHE_TAG = "spotify-token";
 
@@ -34,8 +32,8 @@ const trackSchema = z.object({
 
 const currentlyPlayingSchema = z.object({
   is_playing: z.boolean(),
-  item: trackSchema,
-  progress_ms: z.number(),
+  item: trackSchema.nullable(),
+  progress_ms: z.number().nullable(),
 });
 
 const recentlyPlayedSchema = z.object({
@@ -58,9 +56,7 @@ async function getAccessToken() {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization:
-          "Basic " +
-          Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
+        Authorization: "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
       },
       body: new URLSearchParams({
         grant_type: "refresh_token",
@@ -98,13 +94,19 @@ async function spotifyFetcher<T>(
 
 async function getCurrentlyPlayingFetcher(
   token: string
-): Promise<z.infer<typeof currentlyPlayingSchema> | number> {
+): Promise<z.infer<typeof currentlyPlayingSchema> | number | null> {
   const response = await fetch(PLAYER_ENDPOINT, {
     headers: { Authorization: `Bearer ${token}` },
-    next: { revalidate: 0 }, // Disable caching for real-time updates
+    next: { revalidate: 0 }, 
   });
 
-  if (response.status !== 200) return response.status;
+  if (response.status === 204) {
+    return null; 
+  }
+
+  if (response.status !== 200) {
+    return response.status;
+  }
 
   const data = await response.json();
   return currentlyPlayingSchema.parse(data);
@@ -127,19 +129,18 @@ async function getRecentlyPlayedFetcher(
 export async function getCurrentTrack() {
   const result = await spotifyFetcher(getCurrentlyPlayingFetcher);
 
-  if (typeof result === "number") {
-    if (result === 204) return null; // No track currently playing
-    throw new Error(`Unexpected response status: ${result}`);
+  if (result === null || typeof result === "number") {
+    return null; 
   }
 
   return {
-    name: result.item.name,
-    artist: result.item.artists.map((artist) => artist.name).join(", "),
-    album: result.item.album.name,
-    albumArt: result.item.album.images[0].url,
+    name: result.item?.name ?? "",
+    artist: result.item?.artists.map((artist) => artist.name).join(", ") ?? "",
+    album: result.item?.album.name ?? "",
+    albumArt: result.item?.album.images[0]?.url ?? "",
     isPlaying: result.is_playing,
-    duration: result.item.duration_ms,
-    progress: result.progress_ms,
+    duration: result.item?.duration_ms ?? 0,
+    progress: result.progress_ms ?? 0,
   };
 }
 

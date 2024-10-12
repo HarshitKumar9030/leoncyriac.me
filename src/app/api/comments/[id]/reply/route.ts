@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import connectDb from '@/lib/connect'
 import Comment from '@/models/Comment'
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { id } = params
 
   if (!id) {
@@ -12,14 +19,17 @@ export async function POST(request: Request, { params }: { params: { id: string 
   await connectDb()
 
   try {
-    const { author, content } = await request.json()
+    const { content } = await request.json()
 
-    if (!author || !content) {
-      return NextResponse.json({ error: 'Author and content are required' }, { status: 400 })
+    if (!content) {
+      return NextResponse.json({ error: 'Content is required' }, { status: 400 })
     }
 
     const reply = {
-      author,
+      author: {
+        name: session.user?.name || 'Anonymous',
+        email: session.user?.email || 'anonymous@example.com'
+      },
       content,
       createdAt: new Date(),
       likes: 0,

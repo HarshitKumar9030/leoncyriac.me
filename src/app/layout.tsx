@@ -6,6 +6,8 @@ import Navbar from "@/components/common/Navbar";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/common/Footer";
 import ProgressiveScrollBlur from "@/components/common/scroll-blur";
+import Providers from "./Providers";
+import MusicWidget from "@/components/music/music-widget";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -22,12 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
+     <Providers>
         <body
           className={`${inter.variable} ${inter.className} antialiased dark:bg-neutral-900 bg-neutral-50`}
         >
@@ -36,11 +33,12 @@ export default function RootLayout({
             <ProgressiveScrollBlur>
               {children}
             </ProgressiveScrollBlur>
+            <MusicWidget />
             <Toaster />
           </main>
           <Footer />
         </body>
-      </ThemeProvider>
+      </Providers>
     </html>
   );
 }

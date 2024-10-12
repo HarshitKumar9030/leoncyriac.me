@@ -7,7 +7,10 @@ export async function GET() {
     if (track) {
       return NextResponse.json(track)
     } else {
-      return NextResponse.json({ error: 'No track currently playing' }, { status: 204 })
+      return NextResponse.json({ 
+        error: 'No track currently playing', 
+        message: 'It seems there is no song currently being played on Spotify.' 
+      }, { status: 204 })
     }
   } catch (error) {
     console.error('Error fetching current track:', error)
