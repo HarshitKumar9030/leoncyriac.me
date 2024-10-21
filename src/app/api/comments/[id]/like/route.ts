@@ -1,91 +1,78 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDb from '@/lib/connect';
-import Comment, { IComment } from '@/models/Comment';
+import Comment, { IComment, IReply } from '@/models/Comment';
 import mongoose from 'mongoose';
-
-interface LikeRequestBody {
-  replyId?: string;
-}
 
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const userEmail = session.user?.email;
+  if (!userEmail) {
+    return NextResponse.json({ error: 'User email not found' }, { status: 400 });
   }
 
   const { id } = params;
-  console.log('Received Comment ID:', id);
+  console.log('Received ID:', id);
 
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json(
-      { error: 'Invalid Comment ID' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
   }
 
   await connectDb();
 
   try {
-    const contentType = request.headers.get('content-type');
-    let body: LikeRequestBody = {};
+    // First, try to find a comment with the given ID
+    let updatedComment: IComment | null = await Comment.findById(id);
 
-    if (contentType && contentType.includes('application/json')) {
-      body = await request.json();
-    }
-
-    const { replyId } = body;
-    console.log('Received Reply ID:', replyId);
-
-    if (replyId && !mongoose.Types.ObjectId.isValid(replyId)) {
-      return NextResponse.json(
-        { error: 'Invalid Reply ID' },
-        { status: 400 }
-      );
-    }
-
-    let updatedComment: IComment | null = null;
-
-    if (replyId) {
-      const comment = await Comment.findById(id);
-      if (!comment) {
+    if (updatedComment) {
+      // Found a comment with the given ID
+      if (updatedComment.likedBy.includes(userEmail)) {
         return NextResponse.json(
-          { error: `Main comment not found with ID: ${id}` },
-          { status: 404 }
+          { error: 'You have already liked this comment' },
+          { status: 400 }
         );
       }
 
-      const reply = comment.replies.id(replyId);
-      if (!reply) {
-        return NextResponse.json(
-          { error: `Reply not found with ID: ${replyId}` },
-          { status: 404 }
-        );
-      }
+      updatedComment.likes += 1;
+      updatedComment.likedBy.push(userEmail);
+      await updatedComment.save();
 
-      reply.likes += 1;
-      await comment.save();
-      updatedComment = await Comment.findById(id).lean();
+      return NextResponse.json(updatedComment, { status: 200 });
     } else {
-      updatedComment = await Comment.findByIdAndUpdate(
-        id,
-        { $inc: { likes: 1 } },
-        { new: true, lean: true }
-      );
+      // Did not find a comment with the given ID; it might be a reply ID
+      // Find the comment containing this reply ID
+      const comment = await Comment.findOne({ 'replies._id': id });
 
-      if (!updatedComment) {
+      if (!comment) {
+        // Could not find a comment containing this reply ID
         return NextResponse.json(
-          { error: `Main comment not found with ID: ${id}` },
+          { error: `Comment or reply not found with ID: ${id}` },
           { status: 404 }
         );
       }
-    }
 
-    return NextResponse.json(updatedComment, { status: 200 });
+      // Now, increment the likes on the reply
+      const found = incrementReplyLikes(comment.replies, id, userEmail);
+
+      if (!found) {
+        return NextResponse.json(
+          { error: `You have already liked this reply` },
+          { status: 400 }
+        );
+      }
+
+      await comment.save();
+
+      return NextResponse.json(comment, { status: 200 });
+    }
   } catch (error) {
     console.error('Error in POST /api/comments/[id]/like:', error);
     return NextResponse.json(
@@ -93,4 +80,29 @@ export async function POST(
       { status: 500 }
     );
   }
+}
+
+// Recursive function to increment likes for a reply with the given replyId
+function incrementReplyLikes(
+  replies: IReply[],
+  replyId: string,
+  userEmail: string
+): boolean {
+  for (const reply of replies) {
+    if (reply._id.toString() === replyId) {
+      if (reply.likedBy.includes(userEmail)) {
+        return false; // User has already liked this reply
+      }
+      reply.likes += 1;
+      reply.likedBy.push(userEmail);
+      return true;
+    }
+    if (reply.replies && reply.replies.length > 0) {
+      const found = incrementReplyLikes(reply.replies, replyId, userEmail);
+      if (found) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
