@@ -1,46 +1,23 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
-import Timeline from "@/components/blogs/Timeline";
-import BlurImage from "@/components/blogs/BlurImage";
-import CommentSection from "@/components/blogs/CommentSection";
-import { useComments } from "@/hooks/useComments";
-
-const MDXRemote = dynamic(
-  () => import("next-mdx-remote").then((mod) => mod.MDXRemote),
-  {
-    ssr: false,
-  }
-);
+import React from 'react';
+import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
+import Timeline from '@/components/blogs/Timeline';
+import BlurImage from '@/components/blogs/BlurImage';
+import CommentSection from '@/components/blogs/CommentSection';
 
 const components = { Timeline, BlurImage };
 
 interface ClientBlogPostProps {
-  content: string;
-  slug: string
+  mdxSource: MDXRemoteSerializeResult;
+  slug: string;
 }
 
-export default function ClientBlogPost({ content, slug }: ClientBlogPostProps) {
-  const [mdxSource, setMdxSource] = useState<any>(null);
-
-  useEffect(() => {
-    import("next-mdx-remote/serialize").then((mod) => {
-      mod.serialize(content).then(setMdxSource);
-    });
-  }, [content]);
-
-  if (!mdxSource) {
-    return <div>Loading...</div>;
-  }
-
+export default function ClientBlogPost({ mdxSource, slug }: ClientBlogPostProps) {
   return (
-    
     <>
       <MDXRemote {...mdxSource} components={components} />
-      <CommentSection
-        postSlug={slug}
-      />
+      <CommentSection postSlug={slug} />
     </>
   );
 }

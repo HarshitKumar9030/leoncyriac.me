@@ -1,0 +1,36 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+1
+rules_version = '2';
+2
+service cloud.firestore {
+3
+  match /databases/{database}/documents {
+4
+    match /views/{slug} {
+5
+      allow read, write: if true;
+6
+    }
+7
+    match /likes/{slug} {
+8
+      allow read: if true;
+9
+      allow write: if request.auth != null;
+10
+    }
+11
+  }
+12
+}
+13
+​

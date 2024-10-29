@@ -148,16 +148,34 @@ export default function CommentItem({
   };
 
   return (
-    <div className={`flex space-x-4 ${depth > 0 ? 'ml-12 mt-4' : 'mt-6'}`}>
-      <Avatar className="flex-shrink-0">
-        <AvatarImage
-          src={`https://www.gravatar.com/avatar/${comment.author.email}?d=identicon`}
-          alt={comment.author.name}
-        />
-        <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
-      </Avatar>
+    <div
+      className={`flex flex-col sm:flex-row sm:space-x-4 ${
+        depth > 0 ? 'sm:ml-4 md:ml-8 lg:ml-12 mt-4' : 'mt-6'
+      }`}
+    >
+      <div className="flex items-center space-x-4">
+        <Avatar className="flex-shrink-0">
+          <AvatarImage
+            src={`https://www.gravatar.com/avatar/${comment.author.email}?d=identicon`}
+            alt={comment.author.name}
+          />
+          <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1 sm:hidden">
+          {/* Display author name and date on small screens */}
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+              {comment.author.name}
+            </span>
+            <span className="text-sm text-neutral-500 dark:text-neutral-400">
+              {formattedDate}
+            </span>
+          </div>
+        </div>
+      </div>
       <div className="flex-1">
-        <div className="flex items-center justify-between mb-2">
+        <div className="hidden sm:flex items-center justify-between mb-2">
+          {/* Display author name and date on medium and larger screens */}
           <span className="font-semibold text-neutral-900 dark:text-neutral-100">
             {comment.author.name}
           </span>
@@ -165,8 +183,8 @@ export default function CommentItem({
             {formattedDate}
           </span>
         </div>
-        <p className="text-neutral-800 dark:text-neutral-200">{comment.content}</p>
-        <div className="mt-2 flex items-center space-x-4 text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="text-neutral-800 dark:text-neutral-200 mt-2 sm:mt-0">{comment.content}</p>
+        <div className="mt-2 flex flex-wrap items-center space-x-2 text-sm text-neutral-600 dark:text-neutral-400">
           <Button
             onClick={handleLike}
             className={`flex items-center space-x-1 shadow-none rounded-xl ${
@@ -181,7 +199,7 @@ export default function CommentItem({
           </Button>
           <Button
             onClick={() => setIsReplying(!isReplying)}
-            className="flex items-center space-x-1 shadow-none bg-zinc-100 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 dark:bg-zinc-800 hover:text-neutral-800 dark:hover:text-neutral-200"
+            className="flex items-center space-x-1 shadow-none bg-zinc-100 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 dark:bg-zinc-800 hover:text-neutral-800 dark:hover:text-neutral-200 mt-2 sm:mt-0"
             aria-label={`Reply to comment by ${comment.author.name}`}
           >
             <MessageCircle className="w-4 h-4" />
@@ -190,7 +208,7 @@ export default function CommentItem({
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
-                className="flex items-center space-x-1 shadow-none bg-zinc-100 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 dark:bg-zinc-800 hover:text-neutral-800 dark:hover:text-neutral-200"
+                className="flex items-center space-x-1 shadow-none bg-zinc-100 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 dark:bg-zinc-800 hover:text-neutral-800 dark:hover:text-neutral-200 mt-2 sm:mt-0"
                 aria-label={`Report comment by ${comment.author.name}`}
               >
                 <Flag className="w-4 h-4" />
@@ -273,8 +291,15 @@ export default function CommentItem({
               className="flex items-center space-x-1 shadow-none bg-zinc-100 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 dark:bg-zinc-800 hover:text-neutral-800 dark:hover:text-neutral-200"
               aria-label={isExpanded ? 'Collapse replies' : 'Expand replies'}
             >
-              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-              <span>{isExpanded ? 'Hide' : 'Show'} {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}</span>
+              {isExpanded ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
+              <span>
+                {isExpanded ? 'Hide' : 'Show'} {comment.replies.length}{' '}
+                {comment.replies.length === 1 ? 'reply' : 'replies'}
+              </span>
             </Button>
             <AnimatePresence>
               {isExpanded && (
