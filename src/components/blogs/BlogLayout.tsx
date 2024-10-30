@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { MDXProvider } from '@mdx-js/react';
 import TableOfContents from './TableOfContents';
 import { Callout } from './Callout'
+import Quote from './Quote';
 import { Clock, Eye, Calendar, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/custom/button';
@@ -98,6 +99,7 @@ const components = {
     />
   ),
   Callout: Callout,
+  Quote: Quote,
 };
 
 const MetaItem: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (

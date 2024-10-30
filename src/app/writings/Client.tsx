@@ -92,7 +92,7 @@ export default function BlogPosts({ searchQuery }: BlogPostsProps) {
               {error}
             </motion.div>
           ) : (
-            <div className="space-y-6">
+            <div className="!gap-6">
               {filteredPosts.map((post) => (
                 <BlogCard key={post.id} {...post} />
               ))}

@@ -1,12 +1,13 @@
 "use client";
-
-import React from "react";
+import { getBlogPosts } from "@/lib/getBlogPosts";
+import React, { useState, useEffect } from "react";
 import {
   CalendarIcon,
   ClockIcon,
   ArrowRightIcon,
   ThumbsUpIcon,
   MessageCircleIcon,
+  EyeIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -18,83 +19,40 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Beam from "@/components/ui/Beam";
+import Link from "next/link";
 import { WritingsHeading } from "./writings-heading";
 import Image from "next/image";
 import { CustomLink } from "../common/CustomLink";
+import Loading from "@/app/loading";
+
 type Tag = {
-  id: number;
+  id: string;
   name: string;
 };
 
 type BlogPost = {
-  id: number;
+  id: string;
+  slug: string;
   title: string;
   description: string;
   image: string;
   date: string;
-  readTime: string;
+  readingTime: string;
   tags: Tag[];
-  likes: number;
-  comments: number;
+  views: number;
+  likes: string[];
 };
 
-const blogPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: "The Revolution of Peer Learning",
-    description:
-      "Unlock the potential of collaborative education and witness how it's reshaping traditional learning paradigms.",
-    image: "/peerlearn.png",
-    date: "2024-09-01",
-    readTime: "5 min read",
-    tags: [
-      { id: 1, name: "Education" },
-      { id: 2, name: "Collaboration" },
-    ],
-    likes: 127,
-    comments: 23,
-  },
-  {
-    id: 2,
-    title: "AI-Powered Online Education: A Glimpse into Tomorrow",
-    description:
-      "Dive into the cutting-edge AI technologies transforming e-learning and preparing students for the future.",
-    image: "/peerlearn.png",
-    date: "2024-08-25",
-    readTime: "7 min read",
-    tags: [
-      { id: 3, name: "AI" },
-      { id: 4, name: "E-learning" },
-    ],
-    likes: 215,
-    comments: 41,
-  },
-  {
-    id: 3,
-    title: "The Art of Productive Remote Learning",
-    description:
-      "Master the techniques of staying motivated and achieving peak performance in virtual learning environments.",
-    image: "/peerlearn.png",
-    date: "2024-08-18",
-    readTime: "6 min read",
-    tags: [
-      { id: 5, name: "Productivity" },
-      { id: 6, name: "Remote Work" },
-    ],
-    likes: 189,
-    comments: 37,
-  },
-];
-
 const BlogCard: React.FC<BlogPost> = ({
+  slug,
   title,
   description,
   image,
   date,
-  readTime,
+  readingTime,
   tags,
   likes,
-  comments,
+  views,
 }) => {
   return (
     <div style={{ perspective: "1000px" }}>
@@ -114,13 +72,13 @@ const BlogCard: React.FC<BlogPost> = ({
         }}
         className="h-full w-full rounded-lg bg-white dark:bg-neutral-800 relative overflow-hidden shadow-md transition-colors duration-200"
       >
-          <Beam className="top-0" />
-          <Beam className="top-0" />
+        <Beam className="top-0" />
+        <Beam className="top-0" />
 
         <div className="p-3 relative z-10">
           <div className="relative h-48 w-full mb-4 overflow-hidden rounded-lg">
             <Image
-              src={image as string}
+              src={image}
               alt={title}
               layout="fill"
               className="object-cover w-full h-full"
@@ -135,7 +93,7 @@ const BlogCard: React.FC<BlogPost> = ({
             {description}
           </p>
 
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex h-full flex-wrap gap-2 mb-4">
             {tags.map((tag) => (
               <Badge
                 key={tag.id}
@@ -151,10 +109,10 @@ const BlogCard: React.FC<BlogPost> = ({
             <CalendarIcon className="w-4 h-4 mr-2" />
             <span>{date}</span>
             <ClockIcon className="w-4 h-4 ml-4 mr-2" />
-            <span>{readTime}</span>
+            <span>{readingTime}</span>
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex h-full justify-between items-center">
             <div className="flex space-x-4">
               <TooltipProvider>
                 <Tooltip>
@@ -165,7 +123,7 @@ const BlogCard: React.FC<BlogPost> = ({
                       className="p-0 hover:bg-neutral-100 dark:hover:bg-neutral-700 px-2 text-neutral-600 dark:text-neutral-300"
                     >
                       <ThumbsUpIcon className="w-4 h-4 mr-2" />
-                      <span>{likes}</span>
+                      <span>{likes.length}</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -179,25 +137,27 @@ const BlogCard: React.FC<BlogPost> = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="p-0 hover:bg-neutral-100 dark:hover:bg-neutral-700 px-2 text-neutral-600  dark:text-neutral-300"
+                      className="p-0 hover:bg-neutral-100 dark:hover:bg-neutral-700 px-2 text-neutral-600 dark:text-neutral-300"
                     >
-                      <MessageCircleIcon className="w-4 h-4 mr-2" />
-                      <span>{comments}</span>
+                      <EyeIcon className="w-4 h-4 mr-2" />
+                      <span>{views}</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Comments</p>
+                    <p>Views</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-0"
-            >
-              Read More <ArrowRightIcon className="w-4 h-4 ml-2" />
-            </Button>
+            <Link href={`/writings/${slug}`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-0"
+              >
+                Read More <ArrowRightIcon className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -213,16 +173,65 @@ const BlogCard: React.FC<BlogPost> = ({
 };
 
 export default function Writings() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setIsLoading(true);
+      try {
+        const { posts: fetchedPosts } = await getBlogPosts(1, 3, "");
+        setPosts(fetchedPosts);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        setError("Failed to fetch posts. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <WritingsHeading />
+        <div className="text-center mt-12 text-red-600 dark:text-red-400 text-xl">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <WritingsHeading />
+        <div className="text-center mt-12">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <WritingsHeading />
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {blogPosts.map((post) => (
+        {posts.map((post) => (
           <BlogCard key={post.id} {...post} />
         ))}
       </div>
       <div className="mt-8 flex justify-end">
-        <CustomLink link="/writings" className="shadow-none px-6 hover:bg-neutral-200 bg-neutral-300 dark:bg-neutral-700 transition-all duration-300 dark:hover:bg-neutral-800">View All</CustomLink>
+        <CustomLink
+          link="/writings"
+          className="shadow-none px-6 hover:bg-neutral-200 bg-neutral-300 dark:bg-neutral-700 transition-all duration-300 dark:hover:bg-neutral-800"
+        >
+          View All
+        </CustomLink>
       </div>
     </div>
   );

@@ -1,0 +1,233 @@
+---
+title: 'My Journey with Rust: Building a Command-Line Calculator'
+date: '2024-10-31'
+author: 'Harshit Singh'
+readingTime: 11
+image: '/blog2.jpeg'
+excerpt: 'Join me on my Rust adventure as we build a practical command-line calculator. Learn Rust fundamentals and key concepts like ownership and error handling through hands-on coding.'
+tags: ['Rust', 'Programming', 'Tutorial', 'CLI', 'Beginners']
+category: 'Programming'
+featured: true
+status: 'published'
+seo: {
+  title: 'Learn Rust Programming with Me: Building a Command-Line Calculator | Beginner Tutorial',
+  description: 'Follow along as I build my first Rust program - a command-line calculator. Perfect for beginners looking to learn Rust programming fundamentals.',
+  keywords: ['Rust Programming', 'Rust Tutorial', 'CLI Development', 'Rust Calculator', 'Learn Rust', 'Rust for Beginners']
+}
+---
+
+import { Timeline } from '../components/Timeline'
+import { BlurImage } from '../components/BlurImage'
+import { Callout } from '../components/Callout'
+import { Quote } from '../components/Quote'
+
+# My Rust Adventure: Building a Command-Line Calculator
+
+Hey there, fellow code enthusiasts! It's Harshit here, and today I'm super excited to share my journey into the world of Rust. If you're anything like me - a high school student juggling studies, coding passions, and a million other things - you're probably wondering, "Why Rust?" Well, buckle up, because we're about to find out together!
+
+<BlurImage 
+  src="https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2560&q=80" 
+  alt="Rolling green hills representing the learning journey" 
+  caption="Just like my morning runs in the Aravali hills, learning Rust has its ups and downs. But trust me, the view from the top is worth it!"
+/>
+
+<Callout type="info">
+  Before we dive in: Make sure you've got Rust installed on your system. If you haven't, head over to [rustup.rs](https://rustup.rs) and follow the installation guide. Don't worry, it's easier than convincing your parents to extend your curfew!
+</Callout>
+
+## Our Rust Expedition: What's in Store?
+
+Here's a sneak peek of our coding adventure:
+
+<Timeline
+  items={[
+    {
+      time: 'Base Camp',
+      title: 'Project Setup',
+      description: 'Setting up our Rust project (easier than setting up for board exams, I promise!)'
+    },
+    {
+      time: 'First Checkpoint',
+      title: 'Basic Input/Output',
+      description: 'Learning to talk to our program (no social skills required)'
+    },
+    {
+      time: 'The Climb',
+      title: 'Implementing Operations',
+      description: 'Adding math operations (finally, a use for all that algebra)'
+    },
+    {
+      time: 'Safety Gear',
+      title: 'Error Handling',
+      description: 'Making our calculator foolproof (or at least Harshit-proof)'
+    },
+    {
+      time: 'Summit',
+      title: 'Testing',
+      description: 'Ensuring our calculator works (unlike my science experiments)'
+    }
+  ]}
+/>
+
+## Base Camp: Project Setup
+
+Let's kick things off by creating our Rust project:
+
+```bash
+cargo new rust_calculator
+cd rust_calculator
+```
+
+This sets up a new directory with all the Rust essentials. It's like packing your backpack for a coding expedition!
+
+<Quote author="My CS Teacher">
+  "Harshit, organizing your code is like organizing your room. Do it right, and you'll always find what you need. Do it wrong, and... well, you've seen your room."
+</Quote>
+
+## The Heart of Our Calculator
+
+Now, let's write the core of our calculator. Don't worry if it looks intimidating - we'll break it down!
+
+```rust
+use std::io::{self, Write};
+
+fn main() {
+    println!("Welcome to Harshit's Rust Calculator!");
+    println!("Enter an expression (e.g., 2 + 3) or 'quit' to exit:");
+    
+    loop {
+        print!("> ");
+        io::stdout().flush().unwrap();
+        
+        let mut input = String::new();
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
+            
+        if input.trim() == "quit" {
+            println!("Thanks for calculating with me!");
+            break;
+        }
+        
+        match calculate_result(&input) {
+            Ok(result) => println!("Result: {}", result),
+            Err(e) => println!("Oops! {}", e),
+        }
+    }
+}
+```
+
+<Callout type="warning">
+  See that `match` keyword? It's like Rust's version of a switch statement, but on steroids. Trust me, it's cooler than it looks!
+</Callout>
+
+## The Brain of Our Calculator
+
+Now for the real magic - the calculation function:
+
+```rust
+fn calculate_result(input: &str) -> Result<f64, String> {
+    let parts: Vec<&str> = input.trim().split_whitespace().collect();
+    
+    if parts.len() != 3 {
+        return Err("Whoa there! I need exactly three parts: number, operator, number.".to_string());
+    }
+    
+    let num1: f64 = parts[0].parse().map_err(|_| "First number looks sus. Try again?")?;
+    let operator = parts[1];
+    let num2: f64 = parts[2].parse().map_err(|_| "Second number is not cooperating. Another shot?")?;
+    
+    match operator {
+        "+" => Ok(num1 + num2),
+        "-" => Ok(num1 - num2),
+        "*" => Ok(num1 * num2),
+        "/" => {
+            if num2 == 0.0 {
+                Err("Division by zero! Even Rust can't handle that level of rebel.".to_string())
+            } else {
+                Ok(num1 / num2)
+            }
+        }
+        _ => Err("Unknown operator. Stick to +, -, *, or / for now!".to_string()),
+    }
+}
+```
+
+## Rust Concepts That Blew My Mind
+
+1. **Ownership and Borrowing**: Rust's way of managing memory. It's like lending your favorite pen - you know exactly who has it and when you'll get it back.
+2. **Error Handling**: Using `Result<T, E>` is like having a safety net while doing acrobatics. It's saved me from many runtime crashes!
+3. **Pattern Matching**: The `match` expression is like a Swiss Army knife for control flow. So versatile!
+4. **Type Safety**: Rust's compiler is like that one friend who always catches your mistakes before they become embarrassing. Annoying sometimes, but you're grateful in the end.
+
+<Quote author="Me, at 2 AM, debugging">
+  "I never thought I'd say this, but I'm starting to love the Rust compiler. It's like having a really strict but helpful coding buddy."
+</Quote>
+
+## Let's Test This Bad Boy
+
+Time to make sure our calculator isn't just a pretty face:
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_addition() {
+        assert_eq!(calculate_result("2 + 2").unwrap(), 4.0);
+    }
+
+    #[test]
+    fn test_division_by_zero() {
+        assert!(calculate_result("5 / 0").is_err());
+    }
+
+    #[test]
+    fn test_invalid_input() {
+        assert!(calculate_result("1 + + 2").is_err());
+    }
+}
+```
+
+<Callout type="info">
+  Run these tests with `cargo test`. It's like having a robot check your math homework!
+</Callout>
+
+## Level Up Your Calculator
+
+Now that we've got the basics down, here are some cool ways to take it to the next level:
+
+1. Add more operations (like power or modulus - impress your math teacher!)
+2. Implement parentheses support (because BODMAS is life)
+3. Add memory functions (store and recall results - handy for long calculations)
+4. Play with floating-point precision (because sometimes you need more than two decimal places)
+
+<Callout type="warning">
+  Pro tip: Always think about edge cases. What happens with really big numbers? Negative numbers? It's like preparing for surprise questions in an exam!
+</Callout>
+
+## Wrapping Up
+
+Wow, we've come a long way! We've built a working calculator and learned some key Rust concepts along the way. Here's what we covered:
+
+- Setting up a Rust project (easier than I thought!)
+- Basic Rust syntax (once you get used to the semicolons, it's not so bad)
+- Handling user input and output (talking to your program is fun!)
+- Error handling with Result (because errors happen, even to the best of us)
+- Pattern matching with match (it's like a supercharged if-else)
+- Testing (because even geniuses double-check their work)
+
+Remember, learning Rust is a journey. There will be times when you feel like banging your head against the wall (looking at you, borrow checker!), but trust me, it gets better. The concepts that seem tough now will become second nature before you know it.
+
+<Quote author="Not My Dad">
+  "Harshit, learning a new skill is like building muscle. It might hurt at first, but that's how you know you're growing."
+</Quote>
+
+Ready to dive deeper? Check out the [Rust Book](https://doc.rust-lang.org/book/) - it's like the Harry Potter series of programming, but with more semicolons and fewer wizards.
+
+Keep coding, keep learning, and remember - every error message is just a stepping stone to becoming a better programmer. Until next time, this is Harshit, signing off. Stay curious, stay persistent, and may the Rust be with you! 🦀💻
+
+<Callout type="info">
+  Want to see the complete code or suggest improvements? Check out my [GitHub repository](https://github.com/harshitkumar9030/rust-calculator). Don't forget to star it if you found this helpful! And hey, if you have any cool ideas for extending this calculator, drop them in the comments - let's learn together!
+</Callout>

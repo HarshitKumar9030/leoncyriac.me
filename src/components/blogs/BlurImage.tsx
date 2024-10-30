@@ -1,7 +1,15 @@
+"use client";
 import Image from 'next/image'
 import { useState } from 'react'
 
-export default function BlurImage({ src, alt }: { src: string; alt: string }) {
+interface BlurImageProps {
+  src: string
+  alt: string
+  width: number
+  height: number
+}
+
+export default function BlurImage({ src, alt, width, height }: BlurImageProps) {
   const [isLoading, setLoading] = useState(true)
 
   return (
@@ -9,13 +17,16 @@ export default function BlurImage({ src, alt }: { src: string; alt: string }) {
       <Image
         alt={alt}
         src={src}
-        layout="fill"
-        objectFit="cover"
+        fill={true}
+        quality={100}
         className={`
           duration-700 ease-in-out
-          ${isLoading ? 'scale-110 blur-2xl grayscale' : 'scale-100 blur-0 grayscale-0'}
+          ${isLoading 
+            ? 'scale-110 blur-2xl grayscale' 
+            : 'scale-100 blur-0 grayscale-0'}
         `}
         onLoadingComplete={() => setLoading(false)}
+        style={{ objectFit: 'cover' }}
       />
     </div>
   )

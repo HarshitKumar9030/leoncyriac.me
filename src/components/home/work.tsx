@@ -119,24 +119,24 @@ const projectListLeft = [
 
 const projectListRight = [
   {
-    href: "https://www.raycast.com/GLaDO8/pie-for-pi-hole#install",
-    src: "/images/pie.png",
-    alt: "Pie for Pi-hole",
-    name: "Pie for Pi-hole",
+    href: "/writings/managing-life-as-student",
+    src: "/blog.jpg",
+    alt: "managing-life-as-student",
+    name: "Life as a Student",
     isVertical: true,
   },
   {
-    href: "https://glado8.notion.site/glado8/An-Amateur-s-Guide-to-Leading-a-Sustainable-Lifestyle-in-India-b5b80a9e97c24ee0bf9c660f75ea9fba",
-    src: "/images/sustain-long.svg",
-    alt: "Sustainable Lifestyle Guide",
-    name: "Sustainable Lifestyle Guide",
+    href: "https://github.com/HarshitKumar9030/anime_recommendation_model",
+    src: "/anime.jpg",
+    alt: "Anime Recommendation Model",
+    name: "Anime Recommendation AI",
     isVertical: true,
   },
   {
-    href: "https://ss.ss/writings/dissecting-my-workflow",
-    src: "/images/tools.png",
-    alt: "Tools and Workflow",
-    name: "Tools and Workflow",
+    href: "https://github.com/HarshitKumar9030/python-web-crawler",
+    src: "/output.jpg",
+    alt: "Python Web Crawler",
+    name: "Sophisticated Web Crawler",
   },
 ];
 

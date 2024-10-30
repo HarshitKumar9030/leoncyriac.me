@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { ChevronDown, ChevronRight, Search, Loader2, Menu } from 'lucide-react'
+// @ts-ignore
 import throttle from 'lodash/throttle'
 
 import { Button } from "@/components/ui/button"
@@ -120,8 +121,8 @@ export default function TableOfContents() {
     <div
       className={`${
         isDesktop ? 'w-64' : 'w-full'
-      } bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 ${
-        isOpen ? 'rounded-t-lg' : 'rounded-lg'
+      } bg-zinc-50 dark:bg-zinc-900 border pb-3 border-zinc-200 dark:border-zinc-800 ${
+        isOpen ? 'rounded-t-lg rounded-b-lg' : 'rounded-lg'
       } shadow-sm overflow-hidden`}
     >
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
