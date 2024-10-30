@@ -1,18 +1,13 @@
+
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import Link, { LinkProps } from 'next/link';
+import Link from 'next/link';
 import { MDXProvider } from '@mdx-js/react';
 import TableOfContents from './TableOfContents';
-import {
-  Clock,
-  Eye,
-  Calendar,
-  ThumbsUp,
-  MessageCircle,
-  Share2,
-} from 'lucide-react';
+import { Callout } from './Callout'
+import { Clock, Eye, Calendar, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/custom/button';
 import { usePathname } from 'next/navigation';
@@ -44,15 +39,17 @@ const components = {
         loading="lazy"
         placeholder="blur"
         blurDataURL="/placeholder.png"
+        alt={props.alt || 'Blog post image'}
       />
     </div>
   ),
-  a: (props: LinkProps & { children: React.ReactNode }) => (
+  a: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <Link
+      href={href || '#'}
       {...props}
       className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 underline"
     >
-      {props.children}
+      {children}
     </Link>
   ),
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
@@ -72,8 +69,8 @@ const components = {
   ),
   ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
     <ul
-      {...props}
-      className="list-disc list-inside mb-4 text-zinc-600 dark:text-zinc-400"
+    {...props}
+    className="list-disc list-inside mb-4 text-zinc-600 dark:text-zinc-400"
     />
   ),
   ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
@@ -86,34 +83,31 @@ const components = {
     <blockquote
       {...props}
       className="border-l-4 border-zinc-300 dark:border-zinc-700 pl-4 italic my-4 text-zinc-600 dark:text-zinc-400"
-    />
-  ),
+      />
+    ),
   code: (props: React.HTMLAttributes<HTMLElement>) => (
     <code
       {...props}
       className="bg-zinc-100 dark:bg-zinc-800 rounded px-1 py-0.5 text-sm text-zinc-800 dark:text-zinc-200"
-    />
+      />
   ),
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
     <pre
-      {...props}
+    {...props}
       className="bg-zinc-100 dark:bg-zinc-800 rounded p-4 overflow-x-auto my-4"
     />
   ),
+  Callout: Callout,
 };
 
-const MetaItem: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> =
-  ({ icon, children }) => (
-    <div className="flex items-center text-sm text-zinc-500 dark:text-zinc-400">
-      {icon}
-      <span className="ml-1">{children}</span>
-    </div>
-  );
+const MetaItem: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (
+  <div className="flex items-center text-sm text-zinc-500 dark:text-zinc-400">
+    {icon}
+    <span className="ml-1">{children}</span>
+  </div>
+);
 
-export default function BlogLayout({
-  children,
-  frontMatter,
-}: BlogLayoutProps) {
+export default function BlogLayout({ children, frontMatter }: BlogLayoutProps) {
   const { data: session } = useSession();
   const [views, setViews] = useState<number>(0);
   const [likes, setLikes] = useState<string[]>([]);
@@ -126,8 +120,19 @@ export default function BlogLayout({
 
   useEffect(() => {
     if (slug && !didIncrementView.current) {
-      fetch(`/api/views/${slug}`, { method: 'POST' });
-      didIncrementView.current = true;
+      const incrementViews = async () => {
+        try {
+          const response = await fetch(`/api/views/${slug}`, { method: 'POST' });
+          if (!response.ok) {
+            throw new Error('Failed to increment view count');
+          }
+          didIncrementView.current = true;
+        } catch (error) {
+          console.error('Error incrementing view count:', error);
+        }
+      };
+
+      incrementViews();
     }
   }, [slug]);
 
@@ -135,13 +140,15 @@ export default function BlogLayout({
     if (slug) {
       const viewsRef = doc(db, 'views', slug);
       const unsubscribeViews = onSnapshot(viewsRef, (docSnap) => {
-        const data = docSnap.data();
-        setViews(data?.count || 0);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setViews(data?.count || 0);
+        } else {
+          setViews(0);
+        }
       });
 
-      return () => {
-        unsubscribeViews();
-      };
+      return () => unsubscribeViews();
     }
   }, [slug]);
 
@@ -149,32 +156,34 @@ export default function BlogLayout({
     if (slug) {
       const likesRef = doc(db, 'likes', slug);
       const unsubscribeLikes = onSnapshot(likesRef, (docSnap) => {
-        const data = docSnap.data();
-        const likesData = data?.likes || [];
-        setLikes(likesData);
-        if (session?.user?.email) {
-          setUserHasLiked(likesData.includes(session.user.email));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const likesData = data?.likes || [];
+          setLikes(likesData);
+          setUserHasLiked(session?.user?.email ? likesData.includes(session.user.email) : false);
         } else {
+          setLikes([]);
           setUserHasLiked(false);
         }
       });
 
-      return () => {
-        unsubscribeLikes();
-      };
+      return () => unsubscribeLikes();
     }
   }, [slug, session]);
 
-  // Fetch comments count
   useEffect(() => {
     if (slug) {
       const fetchCommentsCount = async () => {
         try {
           const res = await fetch(`/api/comments/count?slug=${slug}`);
+          if (!res.ok) {
+            throw new Error('Failed to fetch comments count');
+          }
           const data = await res.json();
           setCommentsCount(data.count || 0);
         } catch (error) {
           console.error('Error fetching comments count:', error);
+          setCommentsCount(0);
         }
       };
 
@@ -182,7 +191,7 @@ export default function BlogLayout({
     }
   }, [slug]);
 
-  const handleLike = async () => {
+  const handleLike = useCallback(async () => {
     if (!session?.user?.email) {
       toast({
         title: 'Authentication Required',
@@ -193,13 +202,10 @@ export default function BlogLayout({
     }
     try {
       const res = await fetch(`/api/likes/${slug}`, { method: 'POST' });
-      const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to update like status.');
+        throw new Error('Failed to update like status');
       }
-      const likesData = data.likes || [];
-      setLikes(likesData);
-      setUserHasLiked(likesData.includes(session.user.email));
+      // The likes state will be updated by the Firestore listener
     } catch (error) {
       console.error('Error in handleLike:', error);
       toast({
@@ -208,33 +214,42 @@ export default function BlogLayout({
         variant: 'destructive',
       });
     }
-  };
+  }, [session, slug, toast]);
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     if (navigator.share) {
       navigator.share({
         title: frontMatter.title,
         url: window.location.href,
-      });
+      }).catch((error) => console.error('Error sharing:', error));
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast({
-        title: 'Link Copied',
-        description: 'The link has been copied to your clipboard.',
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        toast({
+          title: 'Link Copied',
+          description: 'The link has been copied to your clipboard.',
+        });
+      }).catch((error) => {
+        console.error('Error copying to clipboard:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to copy link to clipboard.',
+          variant: 'destructive',
+        });
       });
     }
-  };
+  }, [frontMatter.title, toast]);
 
-  const handleCommentsClick = () => {
+  const handleCommentsClick = useCallback(() => {
     const commentsSection = document.getElementById('comments');
     if (commentsSection) {
       commentsSection.scrollIntoView({ behavior: 'smooth' });
     } else {
       window.location.hash = 'comments';
     }
-  };
+  }, []);
 
   return (
+      // @ts-ignore
     <MDXProvider components={components}>
       <div className="max-w-5xl mx-auto px-4 py-8">
         <article>
@@ -274,7 +289,7 @@ export default function BlogLayout({
                 className="flex items-center space-x-2"
               >
                 <ThumbsUp
-                  className={`w-4 h-4 ${userHasLiked ? 'text-neutral-500' : ''}`}
+                  className={`w-4 h-4 ${userHasLiked ? 'text-primary' : ''}`}
                 />
                 <span>{likes.length}</span>
               </Button>
@@ -304,16 +319,10 @@ export default function BlogLayout({
               <div className="prose prose-zinc dark:prose-invert max-w-none">
                 {children}
               </div>
-
-              {/* Comments Section */}
-              <section id="comments" className="mt-16">
-                {/* Render your comments component here */}
-                {/* <Comments postSlug={slug} /> */}
-              </section>
             </div>
 
             <aside className="w-full lg:w-1/4 mt-8 lg:mt-0">
-              <div className="sticky top-8">
+              <div className="sticky  top-8">
                 <TableOfContents />
               </div>
             </aside>

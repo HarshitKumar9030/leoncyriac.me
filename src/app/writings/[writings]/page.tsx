@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { notFound } from 'next/navigation';
+import { serialize } from 'next-mdx-remote/serialize';
 import BlogLayout from '@/components/blogs/BlogLayout';
 import ClientBlogPost from './Client';
-import { serialize } from 'next-mdx-remote/serialize';
 
 interface BlogPostProps {
   params: {
@@ -52,6 +52,7 @@ export default async function BlogPost({ params }: BlogPostProps) {
   const mdxSource = await serialize(content);
 
   return (
+    // @ts-ignore
     <BlogLayout frontMatter={frontMatter}>
       <ClientBlogPost mdxSource={mdxSource} slug={writings} />
     </BlogLayout>

@@ -48,6 +48,7 @@
     "firebase": "^11.0.0",
     "firebase-admin": "^12.6.0",
     "framer-motion": "^11.5.4",
+    "fs": "0.0.1-security",
     "gray-matter": "^4.0.3",
     "hls.js": "^1.5.16",
     "install": "^0.13.0",
