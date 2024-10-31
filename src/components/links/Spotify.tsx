@@ -12,6 +12,7 @@ type Track = {
   isPlaying: boolean;
   duration: number;
   progress: number;
+  status?: "playing" | "not_playing";
 };
 
 type LastPlayed = {
@@ -53,7 +54,7 @@ function TrackDisplay({
 
   return (
     <motion.div
-      className="flex items-center border-neutral-300 dark:border-neutral-700 space-x-4 p-4 bg-white dark:bg-neutral-800 rounded-lg border transition-shadow duration-300 ease-in-out "
+      className="flex items-center border-neutral-300 dark:border-neutral-700 space-x-4 p-4 bg-white dark:bg-neutral-800 rounded-lg border transition-shadow duration-300 ease-in-out"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -61,7 +62,7 @@ function TrackDisplay({
       <div className="relative w-16 h-16 flex-shrink-0">
         <img
           src={track.albumArt}
-          alt={`${track.album} cover`}
+          alt={`${track.album}`}
           className="w-full h-full object-cover rounded-md shadow-sm transition-transform duration-300 ease-in-out hover:scale-105"
         />
         <AnimatePresence>
@@ -87,12 +88,12 @@ function TrackDisplay({
       </div>
       <div className="flex-grow min-w-0">
         <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-base truncate">
-          {track.name}
+          {track.name || "Not Playing"}
         </p>
         <p className="text-sm text-neutral-600 dark:text-neutral-300 truncate">
-          {track.artist}
+          {track.artist || "No artist"}
         </p>
-        {isCurrentTrack && "progress" in track && (
+        {isCurrentTrack && "progress" in track && track.status !== "not_playing" && (
           <div className="mt-2 relative h-1.5 bg-neutral-300 dark:bg-neutral-600 rounded-full overflow-hidden">
             <motion.div
               className="absolute top-0 left-0 h-full bg-green-500 dark:bg-green-400"
@@ -113,9 +114,7 @@ function TrackDisplay({
 }
 
 export default function NowPlaying() {
-  const [liveTrackInfo, setLiveTrackInfo] = useState<LiveTrackInfo | null>(
-    null
-  );
+  const [liveTrackInfo, setLiveTrackInfo] = useState<LiveTrackInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchLiveTrackInfo = useCallback(async () => {
@@ -136,7 +135,7 @@ export default function NowPlaying() {
 
   useEffect(() => {
     fetchLiveTrackInfo();
-    const fetchInterval = setInterval(fetchLiveTrackInfo, 5000); // Fetch every 5 seconds for more real-time updates
+    const fetchInterval = setInterval(fetchLiveTrackInfo, 5000);
     return () => clearInterval(fetchInterval);
   }, [fetchLiveTrackInfo]);
 
@@ -163,9 +162,19 @@ export default function NowPlaying() {
               isCurrentTrack={true}
             />
           ) : (
-            <p className="text-sm text-neutral-600 border border-neutral-300 dark:border-neutral-700 dark:text-neutral-400 p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-md">
-              No track currently playing
-            </p>
+            <TrackDisplay
+              track={{
+                name: "",
+                artist: "",
+                album: "",
+                albumArt: "",
+                isPlaying: false,
+                duration: 0,
+                progress: 0,
+                status: "not_playing"
+              }}
+              isCurrentTrack={true}
+            />
           )}
         </div>
         <div>

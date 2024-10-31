@@ -94,14 +94,19 @@ async function spotifyFetcher<T>(
 
 async function getCurrentlyPlayingFetcher(
   token: string
-): Promise<z.infer<typeof currentlyPlayingSchema> | number | null> {
+): Promise<z.infer<typeof currentlyPlayingSchema> | number> {
   const response = await fetch(PLAYER_ENDPOINT, {
     headers: { Authorization: `Bearer ${token}` },
-    next: { revalidate: 0 }, 
+    next: { revalidate: 0 },
   });
 
+  // Handle 204 No Content response explicitly
   if (response.status === 204) {
-    return null; 
+    return {
+      is_playing: false,
+      item: null,
+      progress_ms: null
+    };
   }
 
   if (response.status !== 200) {
@@ -129,18 +134,33 @@ async function getRecentlyPlayedFetcher(
 export async function getCurrentTrack() {
   const result = await spotifyFetcher(getCurrentlyPlayingFetcher);
 
-  if (result === null || typeof result === "number") {
-    return null; 
+  if (typeof result === "number") {
+    return null;
+  }
+
+  // If no track is playing (204 response), return a standardized "not playing" state
+  if (!result?.item) {
+    return {
+      name: "",
+      artist: "",
+      album: "",
+      albumArt: "",
+      isPlaying: false,
+      duration: 0,
+      progress: 0,
+      status: "not_playing"
+    };
   }
 
   return {
-    name: result.item?.name ?? "",
-    artist: result.item?.artists.map((artist) => artist.name).join(", ") ?? "",
-    album: result.item?.album.name ?? "",
-    albumArt: result.item?.album.images[0]?.url ?? "",
+    name: result.item.name,
+    artist: result.item.artists.map((artist) => artist.name).join(", "),
+    album: result.item.album.name,
+    albumArt: result.item.album.images[0]?.url ?? "",
     isPlaying: result.is_playing,
-    duration: result.item?.duration_ms ?? 0,
+    duration: result.item.duration_ms,
     progress: result.progress_ms ?? 0,
+    status: "playing"
   };
 }
 

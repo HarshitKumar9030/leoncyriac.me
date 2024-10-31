@@ -1,4 +1,4 @@
-
+/* eslint-disable react-hooks/rules-of-hooks */
 'use client';
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
@@ -8,7 +8,7 @@ import { MDXProvider } from '@mdx-js/react';
 import TableOfContents from './TableOfContents';
 import { Callout } from './Callout'
 import Quote from './Quote';
-import { Clock, Eye, Calendar, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
+import { Clock, Eye, Calendar, ThumbsUp, MessageCircle, Share2, Copy, Check } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/custom/button';
 import { usePathname } from 'next/navigation';
@@ -16,6 +16,18 @@ import { useSession } from 'next-auth/react';
 import { useToast } from '@/components/ui/use-toast';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism-tomorrow.css';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-jsx';
+import 'prismjs/components/prism-tsx';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-rust'
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-markdown';
 
 interface FrontMatter {
   title: string;
@@ -84,20 +96,59 @@ const components = {
     <blockquote
       {...props}
       className="border-l-4 border-zinc-300 dark:border-zinc-700 pl-4 italic my-4 text-zinc-600 dark:text-zinc-400"
-      />
-    ),
-  code: (props: React.HTMLAttributes<HTMLElement>) => (
-    <code
-      {...props}
-      className="bg-zinc-100 dark:bg-zinc-800 rounded px-1 py-0.5 text-sm text-zinc-800 dark:text-zinc-200"
-      />
-  ),
-  pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-    <pre
-    {...props}
-      className="bg-zinc-100 dark:bg-zinc-800 rounded p-4 overflow-x-auto my-4"
     />
   ),
+  code: (props: React.HTMLAttributes<HTMLElement>) => {
+    const { children, className } = props;
+    const language = className ? className.replace(/language-/, '') : '';
+    
+    useEffect(() => {
+      Prism.highlightAll();
+    }, []);
+
+    return (
+      <code
+        {...props}
+        className={`language-${language} bg-zinc-100 dark:bg-zinc-800 rounded px-1 py-0.5 text-sm`}
+      >
+        {children}
+      </code>
+    );
+  },
+  pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => {
+    const [isCopied, setIsCopied] = useState(false);
+    const preRef = useRef<HTMLPreElement>(null);
+
+    const handleCopy = () => {
+      if (preRef.current) {
+        const code = preRef.current.textContent;
+        navigator.clipboard.writeText(code || '').then(() => {
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000);
+        });
+      }
+    };
+
+    return (
+      <div className="relative group">
+        <pre
+          ref={preRef}
+          {...props}
+          className="bg-zinc-100 dark:bg-zinc-800 rounded p-4 overflow-x-auto my-4"
+        >
+          {children}
+        </pre>
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={handleCopy}
+        >
+          {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+        </Button>
+      </div>
+    );
+  },
   Callout: Callout,
   Quote: Quote,
 };
@@ -193,6 +244,10 @@ export default function BlogLayout({ children, frontMatter }: BlogLayoutProps) {
     }
   }, [slug]);
 
+  useEffect(() => {
+    Prism.highlightAll();
+  }, [children]);
+
   const handleLike = useCallback(async () => {
     if (!session?.user?.email) {
       toast({
@@ -251,7 +306,7 @@ export default function BlogLayout({ children, frontMatter }: BlogLayoutProps) {
   }, []);
 
   return (
-      // @ts-ignore
+    // @ts-ignore
     <MDXProvider components={components}>
       <div className="max-w-5xl mx-auto px-4 py-8">
         <article>
@@ -324,7 +379,7 @@ export default function BlogLayout({ children, frontMatter }: BlogLayoutProps) {
             </div>
 
             <aside className="w-full lg:w-1/4 mt-8 lg:mt-0">
-              <div className="sticky  top-8">
+              <div className="sticky top-8">
                 <TableOfContents />
               </div>
             </aside>
