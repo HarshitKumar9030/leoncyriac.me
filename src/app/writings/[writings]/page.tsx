@@ -2,8 +2,15 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { notFound } from 'next/navigation';
-import { serialize } from 'next-mdx-remote/serialize';
+import { compileMDX } from 'next-mdx-remote/rsc';
 import BlogLayout from '@/components/blogs/BlogLayout';
+import Timeline from '@/components/blogs/Timeline';
+import BlurImage from '@/components/blogs/BlurImage';
+import CommentSection from '@/components/blogs/CommentSection';
+import { Callout } from '@/components/blogs/Callout';
+import Quote from '@/components/blogs/Quote';
+
+const components = { Timeline, BlurImage, Callout, Quote };
 
 interface BlogPostProps {
   params: {
@@ -48,14 +55,19 @@ export default async function BlogPost({ params }: BlogPostProps) {
   const markdownWithMeta = fs.readFileSync(filePath, 'utf-8');
   const { data: frontMatter, content } = matter(markdownWithMeta);
 
-  const mdxSource = await serialize(content);
-
-  const ClientBlogPost = await import('./Client').then(mod => mod.default);
+  const { content: mdxContent } = await compileMDX({
+    source: content,
+    components,
+    options: {
+      parseFrontmatter: true,
+    },
+  });
 
   return (
     // @ts-ignore
     <BlogLayout frontMatter={frontMatter}>
-      <ClientBlogPost mdxSource={mdxSource} slug={writings} />
+      {mdxContent}
+      <CommentSection postSlug={writings} />
     </BlogLayout>
   );
 }

@@ -1,10 +1,10 @@
 import React from 'react'
-import { AlertCircle, CheckCircle, Info, AlertTriangle } from "lucide-react"
+import { AlertCircle, CheckCircle, Info, AlertTriangle, LucideIcon } from "lucide-react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const calloutVariants = cva(
-  "my-6 flex gap-2.5 rounded-lg border p-4 transition-colors duration-200",
+  "my-6 flex gap-4 rounded-lg border p-4 transition-colors duration-200",
   {
     variants: {
       type: {
@@ -23,10 +23,10 @@ const calloutVariants = cva(
 interface CalloutProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof calloutVariants> {
   children: React.ReactNode
   title?: string
-  icon?: React.ReactNode
+  icon?: LucideIcon
 }
 
-const icons = {
+const icons: Record<NonNullable<CalloutProps['type']>, LucideIcon> = {
   info: Info,
   warning: AlertTriangle,
   success: CheckCircle,
@@ -42,22 +42,24 @@ export function Callout({
   ...props
 }: CalloutProps) {
   // @ts-ignore
-  const Icon = icon || icons[type]
+  const Icon = icon || icons[type] || Info
 
   return (
     <div
-      className={cn(calloutVariants({ type }), className) + `flex justify-center items-center`}
+      className={cn(calloutVariants({ type }), className)}
       role="alert"
       {...props}
     >
-      <Icon className="h-5 w-5 flex-shrink-0 z-20 mt-1 md:mx-2" aria-hidden="true" />
-      <div className="flex-1">
+      <div className="flex-shrink-0 flex justify-center items-center">
+        <Icon className="h-5 w-5 mx-2 mt-1" aria-hidden="true" />
+      </div>
+      <div className="flex-1 space-y-2">
         {title && (
-          <h3 className="font-semibold mb-2">
+          <h3 className="font-semibold text-base">
             {title}
           </h3>
         )}
-        <div className="text-sm">{children}</div>
+        <div className="text-sm leading-relaxed">{children}</div>
       </div>
     </div>
   )

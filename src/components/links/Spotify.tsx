@@ -60,6 +60,7 @@ function TrackDisplay({
       transition={{ duration: 0.5 }}
     >
       <div className="relative w-16 h-16 flex-shrink-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={track.albumArt}
           alt={`${track.album}`}
