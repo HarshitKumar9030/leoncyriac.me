@@ -11,11 +11,9 @@ export async function GET(request: Request) {
   const query = searchParams.get('q') || ''
 
   try {
-    // Get blog posts from markdown files
     const blogsDirectory = path.join(process.cwd(), 'src/blogs')
     const files = fs.readdirSync(blogsDirectory)
     
-    // Get metadata from Firebase Admin
     const [viewsSnapshot, likesSnapshot, commentsSnapshot] = await Promise.all([
       adminDB.collection('views').get(),
       adminDB.collection('likes').get(),
@@ -66,7 +64,6 @@ export async function GET(request: Request) {
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-    // Filter posts if search query exists
     const filteredPosts = query
       ? posts.filter(
           (post) =>
