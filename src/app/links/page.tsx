@@ -124,7 +124,7 @@ type LinkCardListProps = {
   links: Link[];
 };
 
-export const LinkCardList: React.FC<LinkCardListProps> = ({ links }) => {
+const LinkCardList: React.FC<LinkCardListProps> = ({ links }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [backgroundStyle, setBackgroundStyle] = useState({
