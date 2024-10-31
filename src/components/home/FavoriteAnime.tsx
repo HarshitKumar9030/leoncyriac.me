@@ -119,7 +119,7 @@ export default function FavoriteAnime() {
             <div className="flex justify-center mt-8">
               <button
                 onClick={handleSeeMore}
-                className="px-4 sm:px-6 py-2 mt-4 sm:mt-6 text-xs sm:text-sm font-medium text-neutral-500 bg-neutral-300 dark:text-neutral-900 dark:bg-white rounded-lg hover:bg-neutral-200 transition-all duration-300"
+                className="px-4 sm:px-6 py-2 mt-3 sm:mt-4 text-xs sm:text-sm font-medium text-neutral-500 bg-neutral-300 dark:text-neutral-900 dark:bg-white rounded-lg hover:bg-neutral-200 transition-all duration-300"
               >
                 See More
               </button>
@@ -213,65 +213,60 @@ function WatchlistModal({
   selectedAnimeIndex,
   setSelectedAnimeIndex,
 }: {
-  watchlist: WatchlistItem2[];
-  onClose: () => void;
-  isLoading: boolean;
-  selectedAnimeIndex: number | null;
-  setSelectedAnimeIndex: (index: number | null) => void;
+  watchlist: WatchlistItem2[]
+  onClose: () => void
+  isLoading: boolean
+  selectedAnimeIndex: number | null
+  setSelectedAnimeIndex: (index: number | null) => void
 }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const handleNextImage = () => {
     if (selectedAnimeIndex !== null) {
-      const totalImages =
-        watchlist[selectedAnimeIndex]?.panel.images.thumbnail[0]?.length || 0;
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % totalImages);
+      const totalImages = watchlist[selectedAnimeIndex]?.panel.images.thumbnail[0]?.length || 0
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % totalImages)
     }
-  };
+  }
 
   const handlePrevImage = () => {
     if (selectedAnimeIndex !== null) {
-      const totalImages =
-        watchlist[selectedAnimeIndex]?.panel.images.thumbnail[0]?.length || 0;
-      setCurrentImageIndex(
-        (prevIndex) => (prevIndex - 1 + totalImages) % totalImages
-      );
+      const totalImages = watchlist[selectedAnimeIndex]?.panel.images.thumbnail[0]?.length || 0
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + totalImages) % totalImages)
     }
-  };
+  }
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     return date.toLocaleDateString(undefined, {
       year: "numeric",
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   const getBestThumbnail = (thumbnails: any[], containerWidth: number) => {
     return thumbnails.reduce((prev, curr) => {
-      return Math.abs(curr.width - containerWidth) <
-        Math.abs(prev.width - containerWidth)
+      return Math.abs(curr.width - containerWidth) < Math.abs(prev.width - containerWidth)
         ? curr
-        : prev;
-    });
-  };
+        : prev
+    })
+  }
 
-  const containerWidth = 800;
+  const containerWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth - 32, 800) : 800
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 z-[9999999] bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="relative bg-white dark:bg-neutral-900 rounded-lg shadow-2xl w-11/12 max-w-5xl p-6 flex flex-col"
+        className="relative bg-white dark:bg-neutral-900 rounded-lg shadow-2xl w-full max-w-5xl p-4 sm:p-6 flex flex-col max-h-[90vh] overflow-hidden"
         role="dialog"
         aria-labelledby="watchlist-title"
         aria-modal="true"
@@ -280,7 +275,7 @@ function WatchlistModal({
           onClick={onClose}
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+          className="absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
           aria-label="Close Watchlist"
         >
           <X size={24} />
@@ -288,18 +283,18 @@ function WatchlistModal({
 
         <h3
           id="watchlist-title"
-          className="text-3xl font-bold text-neutral-900 dark:text-white mb-6 text-center"
+          className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white mb-4 sm:mb-6 text-center"
         >
           My Watchlist
         </h3>
 
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6">
-            <ScrollArea className="w-full lg:w-1/3 h-[calc(100vh-200px)] pr-4">
+          <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 h-full overflow-hidden">
+            <ScrollArea className="w-full lg:w-1/3 h-[50vh] lg:h-[70vh] pr-4">
               <AnimatePresence>
                 {watchlist.map((item, index) => (
                   <motion.div
@@ -311,13 +306,11 @@ function WatchlistModal({
                   >
                     <div
                       className={`mb-4 cursor-pointer transition-all duration-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg ${
-                        selectedAnimeIndex === index
-                          ? "ring-2 ring-blue-500 dark:ring-blue-400"
-                          : ""
+                        selectedAnimeIndex === index ? "ring-2 ring-blue-500 dark:ring-blue-400" : ""
                       }`}
                       onClick={() => {
-                        setSelectedAnimeIndex(index);
-                        setCurrentImageIndex(0);
+                        setSelectedAnimeIndex(index)
+                        setCurrentImageIndex(0)
                       }}
                     >
                       <div className="relative">
@@ -326,24 +319,15 @@ function WatchlistModal({
                           alt={item.panel.title}
                           width={320}
                           height={180}
-                          className="w-full h-40 object-cover"
+                          className="w-full h-32 sm:h-40 object-cover"
                         />
                         <div className="absolute top-2 right-2">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className={` ${
-                              item.is_favorite ? "text-pink-600" : "hidden"
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // for in future updation of the toggle favorite logic here
-                            }}
+                            className={`${item.is_favorite ? "text-pink-600" : "hidden"}`}
                           >
-                            <Heart
-                              size={24}
-                              fill={item.is_favorite ? "currentColor" : "none"}
-                            />
+                            <Heart size={20} fill={item.is_favorite ? "currentColor" : "none"} />
                           </Button>
                         </div>
                         {item.new && (
@@ -352,23 +336,16 @@ function WatchlistModal({
                           </div>
                         )}
                       </div>
-                      <div className="p-4 bg-white dark:bg-neutral-800">
-                        <h4 className="text-sm font-semibold text-neutral-900 dark:text-white mb-1 line-clamp-1">
+                      <div className="p-3 sm:p-4 bg-white dark:bg-neutral-800">
+                        <h4 className="text-xs sm:text-sm font-semibold text-neutral-900 dark:text-white mb-1 line-clamp-1">
                           {item.panel.episode_metadata.series_title}
                         </h4>
                         <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2 line-clamp-1">
                           {item.panel.episode_metadata.episode_title}
                         </p>
                         <div className="flex justify-between items-center text-xs text-neutral-500 dark:text-neutral-400">
-                          <span>
-                            Ep {item.panel.episode_metadata.episode_number}
-                          </span>
-                          <span>
-                            {Math.floor(
-                              item.panel.episode_metadata.duration_ms / 60000
-                            )}{" "}
-                            min
-                          </span>
+                          <span>Ep {item.panel.episode_metadata.episode_number}</span>
+                          <span>{Math.floor(item.panel.episode_metadata.duration_ms / 60000)} min</span>
                         </div>
                       </div>
                     </div>
@@ -377,7 +354,7 @@ function WatchlistModal({
               </AnimatePresence>
             </ScrollArea>
 
-            <div className="w-full lg:w-2/3 flex justify-center items-start">
+            <ScrollArea className="w-full lg:w-2/3 h-[50vh] lg:h-[70vh]">
               <AnimatePresence mode="wait">
                 {selectedAnimeIndex !== null && !isLoading ? (
                   <motion.div
@@ -390,13 +367,7 @@ function WatchlistModal({
                   >
                     <div className="relative aspect-video mb-4">
                       <Image
-                        src={
-                          getBestThumbnail(
-                            watchlist[selectedAnimeIndex].panel.images
-                              .thumbnail[0],
-                            containerWidth
-                          ).source
-                        }
+                        src={getBestThumbnail(watchlist[selectedAnimeIndex].panel.images.thumbnail[0], containerWidth).source}
                         alt={watchlist[selectedAnimeIndex].panel.title}
                         layout="fill"
                         objectFit="cover"
@@ -405,41 +376,24 @@ function WatchlistModal({
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg"></div>
                       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
                         <Link
+                          href={constructAnimeUrl(watchlist[selectedAnimeIndex].panel as WatchListPanel) as Url}
                           target="_blank"
-                          href={
-                            constructAnimeUrl(
-                              watchlist[selectedAnimeIndex]
-                                .panel as WatchListPanel
-                            ) as Url
-                          }
                         >
-                          <Button
-                            variant="default"
-                            size="sm"
-                            className="flex shadow-none items-center space-x-2"
-                          >
+                          <Button variant="default" size="sm" className="flex shadow-none items-center space-x-2">
                             <Play size={16} />
                             <span>Play</span>
                           </Button>
                         </Link>
                         <div className="flex space-x-2">
-                          {watchlist[selectedAnimeIndex].is_favorite ? (
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="text-pink-700 cursor-default border-none"
-                            >
-                              <Heart fill="currentColor" size={24} />
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="text-white shadow-none cursor-default border-none"
-                            >
-                              <Heart size={24} />
-                            </Button>
-                          )}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className={`text-white shadow-none cursor-default border-none ${
+                              watchlist[selectedAnimeIndex].is_favorite ? "text-pink-700" : ""
+                            }`}
+                          >
+                            <Heart fill={watchlist[selectedAnimeIndex].is_favorite ? "currentColor" : "none"} size={24} />
+                          </Button>
                         </div>
                       </div>
                       <Button
@@ -463,42 +417,19 @@ function WatchlistModal({
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                        {
-                          watchlist[selectedAnimeIndex].panel.episode_metadata
-                            .series_title
-                        }
+                      <h4 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">
+                        {watchlist[selectedAnimeIndex].panel.episode_metadata.series_title}
                       </h4>
-                      <p className="text-lg font-semibold text-neutral-700 dark:text-neutral-300">
-                        {
-                          watchlist[selectedAnimeIndex].panel.episode_metadata
-                            .episode_title
-                        }
+                      <p className="text-base sm:text-lg font-semibold text-neutral-700 dark:text-neutral-300">
+                        {watchlist[selectedAnimeIndex].panel.episode_metadata.episode_title}
                       </p>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {watchlist[selectedAnimeIndex].panel.description}
                       </p>
-                      <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400">
-                        <span>
-                          Season{" "}
-                          {
-                            watchlist[selectedAnimeIndex].panel.episode_metadata
-                              .season_number
-                          }
-                        </span>
-                        <span>
-                          Episode{" "}
-                          {
-                            watchlist[selectedAnimeIndex].panel.episode_metadata
-                              .episode_number
-                          }
-                        </span>
-                        <span>
-                          {formatDate(
-                            watchlist[selectedAnimeIndex].panel.episode_metadata
-                              .episode_air_date
-                          )}
-                        </span>
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
+                        <span>Season {watchlist[selectedAnimeIndex].panel.episode_metadata.season_number}</span>
+                        <span>Episode {watchlist[selectedAnimeIndex].panel.episode_metadata.episode_number}</span>
+                        <span>{formatDate(watchlist[selectedAnimeIndex].panel.episode_metadata.episode_air_date)}</span>
                       </div>
                     </div>
                   </motion.div>
@@ -513,12 +444,12 @@ function WatchlistModal({
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </ScrollArea>
           </div>
         )}
       </motion.div>
     </motion.div>
-  );
+  )
 }
 
 function AnimeCard({ anime, index }: AnimeCardProps) {

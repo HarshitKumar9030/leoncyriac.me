@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { signIn } from "next-auth/react"
 import { Github, Mail, Loader2 } from "lucide-react"
 
@@ -9,11 +9,20 @@ export default function SignIn() {
     github: false,
     google: false,
   })
+  const [callbackUrl, setCallbackUrl] = useState<string>("/")
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+    const callback = searchParams.get('callbackUrl')
+    if (callback) {
+      setCallbackUrl(callback)
+    }
+  }, [])
 
   const handleSignIn = async (provider: string) => {
     setIsLoading(prev => ({ ...prev, [provider]: true }))
     try {
-      const result = await signIn(provider, { callbackUrl: "/" })
+      await signIn(provider, { callbackUrl })
     } catch (error) {
       console.error(error)
     } finally {
