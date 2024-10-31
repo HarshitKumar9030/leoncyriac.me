@@ -4,7 +4,6 @@ import matter from 'gray-matter';
 import { notFound } from 'next/navigation';
 import { serialize } from 'next-mdx-remote/serialize';
 import BlogLayout from '@/components/blogs/BlogLayout';
-import ClientBlogPost from './Client';
 
 interface BlogPostProps {
   params: {
@@ -50,6 +49,8 @@ export default async function BlogPost({ params }: BlogPostProps) {
   const { data: frontMatter, content } = matter(markdownWithMeta);
 
   const mdxSource = await serialize(content);
+
+  const ClientBlogPost = await import('./Client').then(mod => mod.default);
 
   return (
     // @ts-ignore
