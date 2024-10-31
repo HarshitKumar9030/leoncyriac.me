@@ -9,6 +9,7 @@ import BlurImage from '@/components/blogs/BlurImage';
 import CommentSection from '@/components/blogs/CommentSection';
 import { Callout } from '@/components/blogs/Callout';
 import Quote from '@/components/blogs/Quote';
+import ClientBlogPost from './Client';
 
 const components = { Timeline, BlurImage, Callout, Quote };
 
@@ -44,7 +45,7 @@ export async function generateMetadata({ params }: BlogPostProps) {
   };
 }
 
-export default async function BlogPost({ params }: BlogPostProps) {
+export default async function ServerBlogPost({ params }: BlogPostProps) {
   const { writings } = params;
   const filePath = path.join(process.cwd(), 'src/blogs', `${writings}.mdx`);
 
@@ -66,7 +67,9 @@ export default async function BlogPost({ params }: BlogPostProps) {
   return (
     // @ts-ignore
     <BlogLayout frontMatter={frontMatter}>
-      {mdxContent}
+      <ClientBlogPost>
+        {mdxContent}
+      </ClientBlogPost>
       <CommentSection postSlug={writings} />
     </BlogLayout>
   );
