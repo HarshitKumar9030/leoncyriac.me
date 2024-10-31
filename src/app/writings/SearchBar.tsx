@@ -6,11 +6,7 @@ import { Input } from "@/components/ui/input"
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDebounce } from '@/hooks/use-debouce'
 
-interface SearchBarProps {
-  onSearch: (query: string) => void
-}
-
-export default function SearchBar({ onSearch }: SearchBarProps) {
+export default function SearchBar() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [query, setQuery] = useState(searchParams.get('q') || "")
@@ -29,8 +25,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   useEffect(() => {
     const newParams = updateSearchParams(debouncedQuery)
     router.push(`/writings${newParams ? `?${newParams}` : ''}`, { scroll: false })
-    onSearch(debouncedQuery)
-  }, [debouncedQuery, router, updateSearchParams, onSearch])
+  }, [debouncedQuery, router, updateSearchParams])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

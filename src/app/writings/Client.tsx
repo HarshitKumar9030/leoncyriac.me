@@ -23,17 +23,14 @@ interface BlogPost {
   likes: string[]
 }
 
-interface BlogPostsProps {
-  searchQuery: string
-}
-
-export default function BlogPosts({ searchQuery }: BlogPostsProps) {
+export default function BlogPosts() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
+  const searchQuery = searchParams.get('q') || ''
 
   const fetchPosts = async (currentPage: number, query: string) => {
     setIsLoading(true)
@@ -69,36 +66,35 @@ export default function BlogPosts({ searchQuery }: BlogPostsProps) {
   )
 
   return (
-    <>
-      <AnimatePresence mode="wait">
-        <motion.section
-          key="content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <h2 className="text-2xl font-bold mb-6 text-neutral-900 dark:text-white flex items-center">
-            <Sparkles className="mr-2 w-6 h-6 text-purple-500" />
-            {searchQuery ? 'Search Results' : 'All Writings'}
-          </h2>
-          {error ? (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center mt-12 text-red-600 dark:text-red-400 text-xl"
-            >
-              {error}
-            </motion.div>
-          ) : (
-            <div className="!gap-6">
-              {filteredPosts.map((post) => (
-                <BlogCard key={post.id} {...post} />
-              ))}
-            </div>
-          )}
-        </motion.section>
+    <AnimatePresence mode="wait">
+      <motion.section
+        key="content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <h2 className="text-2xl font-bold mb-6 text-neutral-900 dark:text-white flex items-center">
+          <Sparkles className="mr-2 w-6 h-6 text-purple-500" />
+          {searchQuery ? 'Search Results' : 'All Writings'}
+        </h2>
+        
+        {error ? (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-center mt-12 text-red-600 dark:text-red-400 text-xl"
+          >
+            {error}
+          </motion.div>
+        ) : (
+          <div className="space-y-6">
+            {filteredPosts.map((post) => (
+              <BlogCard key={post.id} {...post} />
+            ))}
+          </div>
+        )}
 
         {filteredPosts.length === 0 && !error && !isLoading && (
           <motion.div
@@ -111,22 +107,22 @@ export default function BlogPosts({ searchQuery }: BlogPostsProps) {
             No writings found. Try a different search term.
           </motion.div>
         )}
-      </AnimatePresence>
 
-      {hasMore && !searchQuery && !error && (
-        <div className="mt-16 text-center">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={loadMore}
-            disabled={isLoading}
-            className="group bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-          >
-            {isLoading ? 'Loading...' : 'Load More'}
-            {!isLoading && <ChevronDown className="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-y-1" />}
-          </Button>
-        </div>
-      )}
-    </>
+        {hasMore && !searchQuery && !error && (
+          <div className="mt-16 text-center">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={loadMore}
+              disabled={isLoading}
+              className="group bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+            >
+              {isLoading ? 'Loading...' : 'Load More'}
+              {!isLoading && <ChevronDown className="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-y-1" />}
+            </Button>
+          </div>
+        )}
+      </motion.section>
+    </AnimatePresence>
   )
 }

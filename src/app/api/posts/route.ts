@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
+import fs from 'fs/promises'
 import path from 'path'
 import matter from 'gray-matter'
 import { adminDB } from '@/lib/firebaseAdmin'
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
   try {
     const blogsDirectory = path.join(process.cwd(), 'src/blogs')
-    const files = fs.readdirSync(blogsDirectory)
+    const files = await fs.readdir(blogsDirectory)
     
     const [viewsSnapshot, likesSnapshot, commentsSnapshot] = await Promise.all([
       adminDB.collection('views').get(),
@@ -20,27 +20,15 @@ export async function GET(request: Request) {
       adminDB.collection('comments').get(),
     ])
 
-    const viewsMap = new Map()
-    const likesMap = new Map()
-    const commentsMap = new Map()
+    const viewsMap = new Map(viewsSnapshot.docs.map(doc => [doc.id, doc.data().count || 0]))
+    const likesMap = new Map(likesSnapshot.docs.map(doc => [doc.id, doc.data().likes || []]))
+    const commentsMap = new Map(commentsSnapshot.docs.map(doc => [doc.id, doc.data().count || 0]))
 
-    viewsSnapshot.forEach((doc) => {
-      viewsMap.set(doc.id, doc.data().count || 0)
-    })
-
-    likesSnapshot.forEach((doc) => {
-      likesMap.set(doc.id, doc.data().likes || [])
-    })
-
-    commentsSnapshot.forEach((doc) => {
-      commentsMap.set(doc.id, doc.data().count || 0)
-    })
-
-    const posts = files
+    const posts = await Promise.all(files
       .filter((filename) => filename.endsWith('.mdx'))
-      .map((filename) => {
+      .map(async (filename) => {
         const filePath = path.join(blogsDirectory, filename)
-        const fileContents = fs.readFileSync(filePath, 'utf8')
+        const fileContents = await fs.readFile(filePath, 'utf8')
         const { data: frontMatter, content } = matter(fileContents)
         
         const slug = filename.replace('.mdx', '')
@@ -61,11 +49,12 @@ export async function GET(request: Request) {
           likes: likesMap.get(slug) || [],
           commentsCount: commentsMap.get(slug) || 0,
         }
-      })
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      }))
+
+    const sortedPosts = posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
     const filteredPosts = query
-      ? posts.filter(
+      ? sortedPosts.filter(
           (post) =>
             post.title.toLowerCase().includes(query.toLowerCase()) ||
             post.description.toLowerCase().includes(query.toLowerCase()) ||
@@ -73,7 +62,7 @@ export async function GET(request: Request) {
               tag.name.toLowerCase().includes(query.toLowerCase())
             )
         )
-      : posts
+      : sortedPosts
 
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
