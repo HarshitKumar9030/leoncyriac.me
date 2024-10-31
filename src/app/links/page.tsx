@@ -4,17 +4,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ExternalLink,
-  Github,
-  Twitter,
-  Linkedin,
   Mail,
   Dribbble,
   Youtube,
-  Twitch,
   Instagram,
   Coffee,
-  Search,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,7 +85,7 @@ const links: Link[] = [
   },
 ];
 
-export const LinkCard: React.FC<Link> = ({ title, url, icon, color }) => {
+const LinkCard: React.FC<Link> = ({ title, url, icon, color }) => {
   return (
     <motion.div className="w-full mb-2 border backdrop-blur-md rounded-xl border-neutral-300 dark:border-neutral-700 relative overflow-hidden group">
       <div className="absolute inset-0">
