@@ -205,7 +205,7 @@ export default function LinksPage() {
   }, []);
   return (
     <div className="min-h-screen flex items-center z-0 justify-center px-4 py-16 ">
-      <div className="container mx-auto max-w-4xl z-10">
+      <div className="px-3 md:px-0 md:container mx-auto max-w-4xl z-10">
         <motion.div
           ref={cardRef}
           initial={{ opacity: 0, y: -20 }}

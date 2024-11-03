@@ -118,13 +118,26 @@ const components = {
   pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => {
     const [isCopied, setIsCopied] = useState(false);
     const preRef = useRef<HTMLPreElement>(null);
+    const { toast } = useToast();
 
     const handleCopy = () => {
       if (preRef.current) {
         const code = preRef.current.textContent;
         navigator.clipboard.writeText(code || '').then(() => {
           setIsCopied(true);
+          toast({
+            title: "Copied to clipboard",
+            description: "The code has been copied to your clipboard.",
+            duration: 2000,
+          });
           setTimeout(() => setIsCopied(false), 2000);
+        }).catch(() => {
+          toast({
+            title: "Failed to copy",
+            description: "An error occurred while copying the code.",
+            variant: "destructive",
+            duration: 2000,
+          });
         });
       }
     };
@@ -134,17 +147,27 @@ const components = {
         <pre
           ref={preRef}
           {...props}
-          className="bg-zinc-100 dark:bg-zinc-800 rounded p-4 overflow-x-auto my-4"
+          className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 overflow-x-auto my-4"
         >
           {children}
         </pre>
         <Button
-          variant="outline"
-          size="icon"
+          variant="secondary"
+          size="sm"
           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={handleCopy}
         >
-          {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+          {isCopied ? (
+            <>
+              <Check className="h-4 w-4 mr-2" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="h-4 w-4 mr-2" />
+              Copy
+            </>
+          )}
         </Button>
       </div>
     );
@@ -154,7 +177,7 @@ const components = {
 };
 
 const MetaItem: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (
-  <div className="flex items-center text-sm text-zinc-500 dark:text-zinc-400">
+  <div className="flex items-center text-xs flex-col space-y-1 sm:space-y-0 sm:flex-row sm:text-sm text-zinc-500 dark:text-zinc-400">
     {icon}
     <span className="ml-1">{children}</span>
   </div>
