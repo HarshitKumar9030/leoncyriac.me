@@ -12,9 +12,25 @@ import MusicWidget from "@/components/music/music-widget";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Harshit - LeonCyriac | Developer Portfolio",
+  title: "Harshit - LeonCyriac",
   description:
-    "Explore the projects and work of Harshit, a passionate developer skilled in modern web technologies like Next.js, Tailwind CSS, and TypeScript. Discover a sleek, professional portfolio showcasing innovative solutions and creative designs.",
+    "Dive into the digital realm of Harshit, a passionate full-stack developer and UI/UX enthusiast. Explore a showcase of innovative projects, cutting-edge web technologies, and creative solutions that push the boundaries of modern web development.",
+  openGraph: {
+    title: "Harshit | Crafting Digital Experiences with Code & Creativity",
+    description: "Explore the innovative projects and creative solutions by Harshit, a full-stack developer passionate about modern web technologies.",
+    url: "https://leoncyriac.me",
+    siteName: "Harshit's Digital Playground",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@OhHarshit",
+    creator: "@OhHarshit",
+  },
+  alternates: {
+    canonical: "https://leoncyriac.me",
+  },
 };
 
 export default function RootLayout({
@@ -24,19 +40,52 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-     <Providers>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Harshit",
+              url: "https://leoncyriac.me",
+              sameAs: [
+                "https://github.com/harshitkumar9030",
+                "https://twitter.com/OhHarshit",
+                "https://dribbble.com/leoncyriac",
+                "https://youtube.com/@leoncyriac",
+                "https://instagram.com/_harshit.xd"
+              ],
+              jobTitle: "Full-Stack Developer",
+              knowsAbout: ["Next.js", "Tailwind CSS", "TypeScript", "UI/UX Design", "Web Development"],
+              nationality: {
+                "@type": "Country",
+                name: "India"
+              }
+            })
+          }}
+        />
+      </head>
+      <Providers>
         <body
           className={`${inter.variable} ${inter.className} antialiased dark:bg-neutral-900 bg-neutral-50`}
         >
-          <Navbar />
-          <main className="pointer-events-auto">
-            <ProgressiveScrollBlur>
-              {children}
-            </ProgressiveScrollBlur>
-            <MusicWidget />
-            <Toaster />
-          </main>
-          <Footer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navbar />
+            <main className="pointer-events-auto">
+              <ProgressiveScrollBlur>
+                {children}
+              </ProgressiveScrollBlur>
+              <MusicWidget />
+              <Toaster />
+            </main>
+            <Footer />
+          </ThemeProvider>
         </body>
       </Providers>
     </html>
