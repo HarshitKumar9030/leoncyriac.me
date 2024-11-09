@@ -1,0 +1,24 @@
+User-agent: *
+
+Allow: /
+Allow: /links
+Allow: /writings/
+
+Disallow: /api/
+Disallow: /_next/
+Disallow: /_vercel/
+Disallow: /static/
+
+Disallow: /admin/
+Disallow: /dashboard/
+
+Disallow: /*.mdx$
+Disallow: /*.md$
+
+Disallow: /*?s=
+Disallow: /*?q=
+Disallow: /*?search=
+Disallow: /*?filter=
+
+
+Sitemap: https://www.leoncyriac.me/sitemap.xml
