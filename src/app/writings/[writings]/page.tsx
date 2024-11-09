@@ -7,11 +7,12 @@ import BlogLayout from '@/components/blogs/BlogLayout';
 import Timeline from '@/components/blogs/Timeline';
 import BlurImage from '@/components/blogs/BlurImage';
 import CommentSection from '@/components/blogs/CommentSection';
+import { NewImage } from '@/components/blogs/NewImage';
 import { Callout } from '@/components/blogs/Callout';
 import Quote from '@/components/blogs/Quote';
 import ClientBlogPost from './Client';
 
-const components = { Timeline, BlurImage, Callout, Quote };
+const components = { Timeline, BlurImage, Callout, Quote, NewImage };
 
 interface BlogPostProps {
   params: {

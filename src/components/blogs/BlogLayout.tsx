@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { MDXProvider } from '@mdx-js/react';
 import TableOfContents from './TableOfContents';
 import { Callout } from './Callout'
+import { NewImage } from './NewImage';
 import Quote from './Quote';
 import { Clock, Eye, Calendar, ThumbsUp, MessageCircle, Share2, Copy, Check } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
@@ -174,6 +175,7 @@ const components = {
     );
   },
   Callout: Callout,
+  NewImage: NewImage,
   Quote: Quote,
 };
 
