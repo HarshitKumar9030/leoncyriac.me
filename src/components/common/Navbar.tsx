@@ -16,48 +16,53 @@ const navItems = [
 ];
 
 const Navbar = () => {
-  const { theme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const pathname = usePathname();
-  const [hovered, setHovered] = useState<string | null>(null);
-  const [underlineProps, setUnderlineProps] = useState<{ left: number; width: number }>({
-    left: 0,
-    width: 0,
-  });
   const navRef = useRef<HTMLDivElement>(null);
+  const [underlineProps, setUnderlineProps] = useState({
+    width: 0,
+    left: 0
+  });
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  const updateUnderline = (href: string) => {
+    if (!navRef.current) return;
+    
+    const navItem = navRef.current.querySelector(`[data-href="${href}"]`) as HTMLElement;
+    if (!navItem) return;
+
+    const navRect = navRef.current.getBoundingClientRect();
+    const itemRect = navItem.getBoundingClientRect();
+
+    setUnderlineProps({
+      width: itemRect.width,
+      left: itemRect.left - navRect.left
+    });
+  };
 
   useEffect(() => {
-    updateUnderlinePosition(pathname);
+    updateUnderline(pathname);
   }, [pathname]);
 
-  const updateUnderlinePosition = (href: string) => {
-    if (typeof window === 'undefined') return; // Guard against SSR
-
-    const element = document.querySelector(`[href="${href}"]`) as HTMLElement;
-    const container = navRef.current;
-
-    if (element && container) {
-      const { left, width } = element.getBoundingClientRect();
-      const containerLeft = container.getBoundingClientRect().left;
-      setUnderlineProps({
-        left: left - containerLeft,
-        width,
-      });
-    }
-  };
+  useEffect(() => {
+    const handleResize = () => updateUnderline(hovered || pathname);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [pathname, hovered]);
 
   const handleMouseEnter = (href: string) => {
     setHovered(href);
-    updateUnderlinePosition(href);
+    updateUnderline(href);
   };
 
   const handleMouseLeave = () => {
     setHovered(null);
-    updateUnderlinePosition(pathname);
+    updateUnderline(pathname);
   };
 
   return (
     <div className="mt-12 flex flex-col items-center justify-center space-y-6">
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         <motion.div
           key={resolvedTheme}
           initial={{ opacity: 0 }}
@@ -74,35 +79,44 @@ const Navbar = () => {
           />
         </motion.div>
       </AnimatePresence>
+
       <nav ref={navRef} className="relative flex flex-row gap-8 text-lg">
         {navItems.map((item) => (
-          <Link key={item.href} href={item.href} passHref>
+          <Link key={item.href} href={item.href}>
             <Button
+              data-href={item.href}
               onMouseEnter={() => handleMouseEnter(item.href)}
               onMouseLeave={handleMouseLeave}
-              className={`relative text-lg shadow-none bg-transparent font-medium transition-all duration-200 ease-in-out ${
-                pathname === item.href
+              className={`
+                relative text-lg shadow-none bg-transparent hover:bg-transparent
+                font-medium transition-all duration-200 ease-in-out
+                ${pathname === item.href
                   ? 'text-black dark:text-white font-semibold'
-                  : 'text-gray-600 dark:text-gray-300'
-              }`}
-              aria-current={pathname === item.href ? 'page' : undefined}
+                  : 'text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white'
+                }
+              `}
+              variant="ghost"
             >
               {item.name}
             </Button>
           </Link>
         ))}
+
         <motion.div
-          layout
           className="absolute -bottom-1 h-[2px] bg-neutral-400 dark:bg-neutral-600 rounded-full"
           initial={false}
-          animate={underlineProps}
+          animate={{
+            width: underlineProps.width,
+            x: underlineProps.left,
+          }}
           transition={{
-            type: 'spring',
+            type: "spring",
             stiffness: 300,
-            damping: 20,
+            damping: 20
           }}
         />
       </nav>
+
       <ModeToggle />
     </div>
   );

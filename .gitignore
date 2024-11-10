@@ -3,6 +3,7 @@
 # Add song is local
 
 /src/app/add-song
+/src/app/admin
 
 # dependencies
 /node_modules

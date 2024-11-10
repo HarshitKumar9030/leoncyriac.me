@@ -13,6 +13,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.leoncyriac.me/polls</loc>
+    <lastmod>2024-11-10T02:46:24.482Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.leoncyriac.me/writings</loc>
     <lastmod>2024-10-31T04:52:04.563Z</lastmod>
     <changefreq>monthly</changefreq>

@@ -8,6 +8,7 @@ import Footer from "@/components/common/Footer";
 import ProgressiveScrollBlur from "@/components/common/scroll-blur";
 import Providers from "./Providers";
 import MusicWidget from "@/components/music/music-widget";
+import QuizBanner from "@/components/quiz/QuizBanner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -76,6 +77,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <QuizBanner />
             <Navbar />
             <main className="pointer-events-auto">
               <ProgressiveScrollBlur>
