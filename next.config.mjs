@@ -11,6 +11,15 @@ const withMDX = nextMDX({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    async redirects() {
+        return [
+          {
+            source: '/marathon',
+            destination: 'https://www.youtube.com', 
+            permanent: true,
+          },
+        ]
+      },
     images: {
         remotePatterns: [{
                 protocol: 'https',
