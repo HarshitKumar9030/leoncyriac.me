@@ -2,6 +2,8 @@ import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getCurrentTrack } from "@/lib/spotify"
 import HomeClient from "./HomeClient"
+import { getNewYearContent } from "@/lib/content"
+import NewYearPopup from "@/components/newyear/Popup"
 
 export default async function HomePage() {
   // Move data fetching to server component
@@ -16,6 +18,7 @@ export default async function HomePage() {
       }
     >
       <HomeClient initialTrack={initialTrack} />
+      <NewYearPopup />
     </Suspense>
   )
 }
