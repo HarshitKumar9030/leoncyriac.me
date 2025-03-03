@@ -548,64 +548,53 @@ export default function BlogChatBot({
             <Card className="h-full flex flex-col overflow-hidden border border-purple-200/30 dark:border-purple-900/30 shadow-xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-xl">
               <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700 dark:from-purple-800 dark:to-purple-900 p-4 flex flex-row justify-between items-center">
                 <div className="flex items-center space-x-2 text-white">
-                  <div className="flex items-center space-x-2 text-white">
-                    <span className="relative">
-                      <Bot className="h-5 w-5" />
-                      <span className="absolute -top-1 -right-1 h-2 w-2 bg-green-400 rounded-full animate-pulse" />
-                    </span>
-                    <div className="">
-                      <div className="flex items-center space-x-2">
+                  <div className="flex flex-col w-full text-white">
+                    {/* Top row: Bot icon, title, and badge */}
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center">
+                        <span className="relative mr-2">
+                          <Bot className="h-5 w-5" />
+                          <span className="absolute -top-1 -right-1 h-2 w-2 bg-green-400 rounded-full animate-pulse" />
+                        </span>
                         <h3 className="font-medium">Article Discussion</h3>
                         <Badge
                           variant="outline"
-                          className="text-[10px] border-white/30 text-white/80"
+                          className="ml-2 text-[10px] border-white/30 text-white/80"
                         >
                           Gemini
                         </Badge>
                       </div>
-                      <div className="flex mt-1 justify-between items-center">
-                        <p className="text-xs text-purple-200">
-                          {messages.length > 1
-                            ? `${messages.length - 1} messages`
-                            : "Start a conversation"}
-                        </p>
+                    </div>
 
-                        {remainingChats !== null && (
-                          <div className="ml-2 flex items-center text-xs text-purple-200">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            <span>
-                              {remainingChats}/{MAX_DAILY_CHATS} chats left
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setRedeemDialogOpen(true)}
-                              className="ml-1 h-4 w-4 rounded-full hover:bg-purple-600/50 text-purple-200"
-                            >
-                              <Gift className="h-2.5 w-2.5" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
+                    {/* Bottom row: Messages count and chat limits */}
+                    <div className="flex items-center justify-between text-xs">
+                      <p className="text-purple-200">
+                        {messages.length > 1
+                          ? `${messages.length - 1} messages`
+                          : "Start a conversation"}
+                      </p>
+
+                      {remainingChats !== null && (
+                        <div className="flex items-center text-purple-200 shrink-0">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          <span className="whitespace-nowrap">
+                            {remainingChats}/{MAX_DAILY_CHATS}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setRedeemDialogOpen(true)}
+                            className="ml-1 h-5 w-5 rounded-full hover:bg-purple-600/50 text-purple-200"
+                          >
+                            <Gift className="h-2.5 w-2.5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setHelpOpen(true)}
-                          className="text-white hover:bg-purple-700/50 dark:hover:bg-purple-700/50 rounded-full h-7 w-7"
-                        >
-                          <HelpCircle className="h-3.5 w-3.5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">Help & Tips</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+              
 
                   <TooltipProvider>
                     <Tooltip>
