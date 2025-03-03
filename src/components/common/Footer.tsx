@@ -1,20 +1,33 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Github, Twitter, Mail, MapPin, ExternalLink, Eye } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import type { FooterLink as FooterLinkType } from "@/types/types"
-import Link from "next/link"
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Github, Twitter, Mail, MapPin, ExternalLink, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { FooterLink as FooterLinkType } from "@/types/types";
+import Link from "next/link";
+// Add this import for the Parisienne font
+import { Parisienne } from "next/font/google";
+
+// Initialize the font
+const parisienne = Parisienne({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const socialLinks = [
-  { icon: Github, href: "https://github.com/harshitkumar9030", label: "GitHub" },
+  {
+    icon: Github,
+    href: "https://github.com/harshitkumar9030",
+    label: "GitHub",
+  },
   { icon: Mail, href: "mailto:harshitkumar9030@gmail.com", label: "Email" },
   { icon: Twitter, href: "https://twitter.com/OhHarshit", label: "Twitter" },
-]
+];
 
 const FooterLink = ({ icon: Icon, href, label }: FooterLinkType) => {
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <Button
@@ -46,8 +59,8 @@ const FooterLink = ({ icon: Icon, href, label }: FooterLinkType) => {
         <span className="sr-only">{label}</span>
       </a>
     </Button>
-  )
-}
+  );
+};
 
 const AnimatedText = ({ text }: { text: string }) => (
   <AnimatePresence mode="wait">
@@ -61,28 +74,28 @@ const AnimatedText = ({ text }: { text: string }) => (
       {text}
     </motion.span>
   </AnimatePresence>
-)
+);
 
 export default function Footer() {
-  const [lastVisitedFrom, setLastVisitedFrom] = useState("")
-  const [viewCount, setViewCount] = useState<number | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
+  const [lastVisitedFrom, setLastVisitedFrom] = useState("");
+  const [viewCount, setViewCount] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchVisitorData = async () => {
-      setIsLoading(true)
-      setError("")
+      setIsLoading(true);
+      setError("");
 
       // Check if the view has already been registered in this session
-      const viewRegistered = sessionStorage.getItem('viewRegistered')
+      const viewRegistered = sessionStorage.getItem("viewRegistered");
 
       if (!viewRegistered) {
         try {
           // Fetch IP address from ipify API
-          const ipResponse = await fetch('https://api.ipify.org/?format=json')
-          const ipData = await ipResponse.json()
-          const ip = ipData.ip
+          const ipResponse = await fetch("https://api.ipify.org/?format=json");
+          const ipData = await ipResponse.json();
+          const ip = ipData.ip;
 
           // Send a POST request to update and get visitor data
           const response = await fetch("/api/visitor", {
@@ -91,50 +104,53 @@ export default function Footer() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ ip }),
-          })
+          });
 
           if (!response.ok) {
-            throw new Error("Failed to fetch visitor data")
+            throw new Error("Failed to fetch visitor data");
           }
 
-          const data = await response.json()
-          setLastVisitedFrom(`${data.city}, ${data.country}`)
-          setViewCount(data.views)
+          const data = await response.json();
+          setLastVisitedFrom(`${data.city}, ${data.country}`);
+          setViewCount(data.views);
 
           // Mark the view as registered in this session
-          sessionStorage.setItem('viewRegistered', 'true')
+          sessionStorage.setItem("viewRegistered", "true");
         } catch (error) {
-          console.error("Error fetching visitor data:", error)
-          setError("Unable to fetch visitor data")
-          setLastVisitedFrom("Unknown Location")
-          setViewCount(null)
+          console.error("Error fetching visitor data:", error);
+          setError("Unable to fetch visitor data");
+          setLastVisitedFrom("Unknown Location");
+          setViewCount(null);
         }
       } else {
         // If view is already registered, just fetch the current data
         try {
-          const response = await fetch("/api/visitor")
+          const response = await fetch("/api/visitor");
           if (!response.ok) {
-            throw new Error("Failed to fetch visitor data")
+            throw new Error("Failed to fetch visitor data");
           }
-          const data = await response.json()
-          setLastVisitedFrom(`${data.city}, ${data.country}`)
-          setViewCount(data.views)
+          const data = await response.json();
+          setLastVisitedFrom(`${data.city}, ${data.country}`);
+          setViewCount(data.views);
         } catch (error) {
-          console.error("Error fetching visitor data:", error)
-          setError("Unable to fetch visitor data")
-          setLastVisitedFrom("Unknown Location")
-          setViewCount(null)
+          console.error("Error fetching visitor data:", error);
+          setError("Unable to fetch visitor data");
+          setLastVisitedFrom("Unknown Location");
+          setViewCount(null);
         }
       }
 
-      setIsLoading(false)
-    }
+      setIsLoading(false);
+    };
 
-    fetchVisitorData()
-  }, [])
+    fetchVisitorData();
+  }, []);
 
   return (
-    <footer id="footer" className="py-8 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
+    <footer
+      id="footer"
+      className="py-8 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800"
+    >
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="flex flex-col items-center md:items-start mb-6 md:mb-0">
@@ -150,12 +166,28 @@ export default function Footer() {
             </motion.div>
 
             <motion.div
-              className="text-[13px] leading-[1.24rem] font-medium text-neutral-600 dark:text-neutral-400"
+              className="text-[13px] leading-[1.24rem] font-medium text-neutral-600 dark:text-neutral-400 flex flex-wrap items-center gap-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
             >
-              © {new Date().getFullYear()} LeonCyriac.
+              <span className="italic">© {new Date().getFullYear()}</span>
+
+              <span className="flex items-center gap-1.5">
+                <span
+                  className={`${parisienne.className} text-sm text-purple-500/80 dark:text-purple-400/80`}
+                >
+                  Shriju
+                </span>
+                <span className="text-neutral-400 dark:text-neutral-500">
+                  &
+                </span>
+                <span
+                  className={`${parisienne.className} text-sm text-indigo-500/80 dark:text-indigo-400/80`}
+                >
+                  Harshit
+                </span>
+              </span>
             </motion.div>
           </div>
 
@@ -214,5 +246,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

@@ -30,6 +30,7 @@ import 'prismjs/components/prism-rust'
 import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-markdown';
 import 'prismjs/components/prism-csharp';
+import BlogChatBot from './BlogChatBot';
 
 interface FrontMatter {
   title: string;
@@ -196,6 +197,7 @@ export default function BlogLayout({ children, frontMatter }: BlogLayoutProps) {
   const slug = pathname ? pathname.split('/').pop() || '' : '';
   const { toast } = useToast();
   const didIncrementView = useRef(false);
+  const blogContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (slug && !didIncrementView.current) {
@@ -399,7 +401,7 @@ export default function BlogLayout({ children, frontMatter }: BlogLayoutProps) {
 
           <div className="flex flex-col lg:flex-row">
             <div className="w-full lg:w-3/4 lg:pr-8">
-              <div className="prose prose-zinc dark:prose-invert max-w-none">
+              <div className="prose prose-zinc dark:prose-invert max-w-none" ref={blogContentRef}>
                 {children}
               </div>
             </div>
@@ -411,6 +413,12 @@ export default function BlogLayout({ children, frontMatter }: BlogLayoutProps) {
             </aside>
           </div>
         </article>
+        
+        <BlogChatBot 
+          blogTitle={frontMatter.title} 
+          blogContent={blogContentRef.current?.innerText || ''} 
+          postSlug={pathname ? pathname.split('/').pop() || '' : ''} 
+        />
       </div>
     </MDXProvider>
   );
