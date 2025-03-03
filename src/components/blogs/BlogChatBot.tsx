@@ -247,7 +247,7 @@ export default function BlogChatBot({
     if (status !== "authenticated") {
       toast({
         title: "Sign in required",
-        description: "Please sign in to chat about this article.",
+        description: "Please sign in to chat about this post, scroll to comments to sign in.",
         variant: "destructive",
       });
       return;
@@ -584,7 +584,7 @@ export default function BlogChatBot({
                             variant="ghost"
                             size="icon"
                             onClick={() => setRedeemDialogOpen(true)}
-                            className="ml-1 h-5 w-5 rounded-full hover:bg-purple-600/50 text-purple-200"
+                            className="ml-1 mr-1 h-5 w-5 rounded-full hover:bg-purple-600/50 text-purple-200"
                           >
                             <Gift className="h-2.5 w-2.5" />
                           </Button>
