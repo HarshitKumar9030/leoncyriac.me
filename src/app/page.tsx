@@ -18,7 +18,7 @@ export default async function HomePage() {
       }
     >
       <HomeClient initialTrack={initialTrack} />
-      <NewYearPopup />
+      {/* <NewYearPopup /> */}
     </Suspense>
   )
 }
